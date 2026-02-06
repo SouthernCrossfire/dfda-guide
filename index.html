@@ -3,72 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DFDA Field Pro Restored</title>
+    <title>DFDA Field Pro - NT 2026</title>
     <style>
         :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --samdf: #2c3e50; }
-        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
+        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
-        /* Fixed Header */
-        .header-nav { position: sticky; top: 0; z-index: 1000; background: var(--navy); display: flex; border-bottom: 3px solid var(--nt); }
-        .tab { padding: 15px 5px; color: white; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; flex: 1; text-align: center; border: none; background: none; opacity: 0.6; transition: 0.2s; }
-        .tab.active { opacity: 1; background: rgba(255,255,255,0.1); border-bottom: 4px solid white; }
+        .header-nav { position: sticky; top: 0; z-index: 999; background: var(--navy); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .tab-bar { display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; }
+        .tab { flex: 1; padding: 12px 2px; text-align: center; color: #fff; cursor: pointer; font-weight: bold; font-size: 10px; transition: 0.2s; border-bottom: 4px solid transparent; min-width: 25%; }
+        .tab.active { border-bottom: 4px solid var(--nt); background: rgba(255,255,255,0.1); color: #fff; }
 
-        .container { padding: 15px; max-width: 600px; margin: auto; padding-bottom: 60px; }
-        .view { display: none; }
-        .view.active { display: block; }
+        .container { max-width: 700px; margin: auto; padding: 15px; padding-bottom: 50px; }
+        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; display: block; }
         
-        /* Cards */
-        .card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; border-left: 8px solid var(--army); overflow: hidden; }
+        .card { background: white; margin-bottom: 15px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
         .card.offence { border-left-color: var(--law); }
         .card.power { border-left-color: var(--navy); }
         .card.samdf { border-left-color: var(--samdf); }
 
-        .card-header { background: #f8f9fa; padding: 12px; font-weight: bold; border-bottom: 1px solid #eee; color: var(--navy); }
-        .card-body { padding: 15px; font-size: 14px; line-height: 1.4; }
+        .card-header { padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold; color: var(--navy); display: flex; justify-content: space-between; }
+        .card-body { padding: 15px; font-size: 14px; line-height: 1.5; color: #333; }
         
-        .search-box, .select-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; background: white; }
-        .nt-box { background: #fff4ed; padding: 12px; border-radius: 6px; border: 1px solid var(--nt); margin-top: 10px; line-height: 1.5; }
+        .log-box { background: #1a1a1a; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 13px; color: #00ff00; line-height: 1.6; white-space: pre-wrap; border: 1px solid #333; }
+        .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt); margin-top: 10px; line-height: 1.6; font-size: 13.5px; }
         
-        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; padding: 8px; border-radius: 4px; height: 60px; box-sizing: border-box; }
-        .legal { color: #666; font-size: 12px; font-style: italic; display: block; margin-top: 8px; border-top: 1px solid #eee; padding-top: 5px; }
+        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; font-size: 14px; }
+        .hidden { display: none !important; }
+        .badge { background: #666; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
+        .badge.bg-offence { background: var(--law); }
+        .badge.bg-power { background: var(--navy); }
+        
+        .legal-detail { color: #555; font-style: italic; margin-top: 5px; display: block; border-top: 1px solid #eee; padding-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="header-nav">
-    <div class="tab active" onclick="showTab(this, 'v-dfda')">DFDA</div>
-    <div class="tab" onclick="showTab(this, 'v-nt')">NT Police</div>
-    <div class="tab" onclick="showTab(this, 'v-samdf')">SAMDF</div>
-    <div class="tab" onclick="showTab(this, 'v-log')">Logs</div>
+    <div class="tab-bar">
+        <div id="t-ref" class="tab active" onclick="nav('ref')">DFDA REF</div>
+        <div id="t-nt" class="tab" onclick="nav('nt')">NT POLICE</div>
+        <div id="t-samdf" class="tab" onclick="nav('samdf')">SAMDF</div>
+        <div id="t-log" class="tab" onclick="nav('log')">LOGS</div>
+    </div>
 </div>
 
 <div class="container">
-    <div id="v-dfda" class="view active">
-        <input type="text" class="search-box" oninput="doSearch(this.value)" placeholder="Search Section (e.g. s89, s47C, s31)...">
-        <div id="dfda-list"></div>
+    <div id="v-ref">
+        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (e.g. s31, s40, s89)...">
+        <div id="searchRes"></div>
     </div>
 
-    <div id="v-nt" class="view">
+    <div id="v-nt" class="hidden">
         <div class="card" style="border-left-color: var(--nt)">
             <div class="card-header">NT Police Comparison</div>
             <div class="card-body">
-                <select class="select-input" onchange="updateNT(this.value)">
+                <select id="ntSel" class="select-input" onchange="runNT()">
                     <option value="">-- Choose Incident --</option>
                     <option value="dui">DUI / Drink Driving</option>
-                    <option value="assault">Common Assault (s188)</option>
-                    <option value="theft">Theft / Stealing (s210)</option>
+                    <option value="assault">Common Assault (NT Code s188)</option>
+                    <option value="theft">Theft / Stealing (NT Code s210)</option>
                 </select>
-                <div id="nt-out"></div>
+                <div id="ntRes"></div>
             </div>
         </div>
     </div>
 
-    <div id="v-samdf" class="view">
+    <div id="v-samdf" class="hidden">
         <div class="card samdf">
             <div class="card-header">SAMDF Authorised Powers</div>
             <div class="card-body">
-                <select class="select-input" onchange="updateSAM(this.value)">
+                <select id="samSel" class="select-input" onchange="runSAM()">
                     <option value="">-- Select SAMDF Power --</option>
-                    <option value="id">s72P: Request ID</option>
-                    <option value="search_v">s72L: Vehicle Search</option>
-                    <option
+                    <option value="id">s72P: Request Identification</option>
+                    <option value="search_v">s72L: Search Vehicles/Vessels</option>
+                    <option value="search_p">s72M/N: Search Persons</option>
+                    <option value="arrest">s72Q: Arrest & Detain</option>
+                </select>
+                <div id="samRes"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="v-log" class="hidden">
+        <div class="card" style="border-left-color: var(--navy)">
+            <div class="card-header">Field Log Templates</div>
+            <div class="card-body">
+                <select id="logSel" class="select-input" onchange="runLog()">
+                    <option value="">-- Choose Occurrence --</option>
+                    <option value="arrest_log">s89(1) - Arrest Entry</option>
+                    <option value="theft_log">s47C - Theft Entry</option>
+                    <option value="drunk">s60 - Intoxication Entry</option>
+                </select>
+                <div id="logRes"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const dfdaData = [
+        { 
+            s: "s31", 
+            title: "Obstructing Service Police", 
+            cat: "offence", 
+            desc: "A person who hinders or resists a service police member in the execution of duty.",
+            legal: "Must prove: (1) Person hindered/resisted; (2) Subject was service police in execution of duty; (3) Accused knew subject was service police. Max penalty: 2 years jail."
+        },
+        { 
+            s: "s40", 
+            title: "Driving under Influence", 
+            cat: "offence", 
+            desc: "Operating or being in charge of a service vehicle while under the influence of alcohol or drugs to the extent of being incapable of proper control.",
+            legal: "Applies to service vehicles anywhere or any vehicle on Defence premises. Evidence of blood/breath analysis is admissible under s101B-s101K."
+        },
+        { 
+            s: "s47C", 
+            title: "Theft", 
+            cat: "offence", 
+            desc: "Dishonestly appropriating property belonging to another with the intention of permanently depriving the other of it.",
+            legal: "Mirroring the Commonwealth Criminal Code. 'Appropriation' includes any assumption of the rights of an owner. 'Dishonesty' is determined by the standards of ordinary people."
+        },
+        { 
+            s: "s60", 
+            title: "Prejudicial Conduct", 
+            cat: "offence", 
+            desc: "An act or omission that is likely to prejudice the discipline of, or bring discredit on, the Defence Force.",
+            legal: "A 'catch-all' charge. Often used for intoxication or public disorder where a specific section doesn't apply. Requires proof of the 'Service Connection'."
+        },
+        { 
+            s: "s89(1)", 
+            title: "Arrest Without Warrant", 
+            cat: "power", 
+            desc: "A service police member (or authorised person) may arrest a person without warrant if they believe on reasonable grounds that the person has committed a service offence.",
+            legal: "Reasonable grounds must be objective. Must inform person of the reason for arrest immediately. Power extends to any person subject to service discipline."
+        },
+        { 
+            s: "s101", 
+            title: "Search of Arrested Person", 
+            cat: "power", 
+            desc: "Authorises the search of a person arrested under s89, and the seizure of things found.",
+            legal: "Includes: (a) Seizing weapons or items that could help escape; (b) Seizing evidence related to the offence. Must be conducted with 'decency and self-respect'."
+        }
+    ];
+
+    function nav(id) {
+        ['v-ref', 'v-nt', 'v-samdf', 'v-log'].forEach(v => document.getElementById(v).classList.add('hidden'));
+        document.getElementById('v-' + id).classList.remove('hidden');
+        ['t-ref', 't-nt', 't-samdf', 't-log'].forEach(t => document.getElementById(t).classList.remove('active'));
+        document.getElementById('t-' + id).classList.add('active');
+    }
+
+    function runSearch() {
+        const q = document.getElementById('searchInp').value.toLowerCase().trim();
+        const out = document.getElementById('searchRes');
+        out.innerHTML = '';
+        dfdaData.filter(i => i.s.toLowerCase().includes(q) || i.title.toLowerCase().includes(q))
+            .forEach(i => {
+                const noteVal = localStorage.getItem('n-'+i.s) || '';
+                out.innerHTML += `
+                    <div class="card ${i.cat}">
+                        <div class="card-header"><span>${i.s}</span> <span class="badge bg-${i.cat}">${i.cat}</span></div>
+                        <div class="card-body">
+                            <strong>${i.title}</strong><br>${i.desc}
+                            <span class="legal-detail">${i.legal}</span>
+                            <textarea placeholder="Field notes..." oninput="localStorage.setItem('n-${i.s}', this.value)">${noteVal}</textarea>
+                        </div>
+                    </div>`;
+            });
+    }
+
+    function runNT() {
+        const val = document.getElementById('ntSel').value;
+        const out = document.getElementById('ntRes');
+        const ntMap = {
+            dui: "<b>NT Traffic Act s25:</b> Driving under influence. High Range (>0.15) penalty is 20 units ($3,620). Automatic disqualification applies.<br><b>Service Equivalent:</b> DFDA s40.",
+            assault: "<b>NT Criminal Code s188:</b> Common Assault. Max 2 years jail. Aggravated Assault (e.g. against police) max 5 years.<br><b>Service Equivalent:</b> DFDA s33 or s61.",
+            theft: "<b>NT Criminal Code s210:</b> Stealing. Dishonest appropriation of property. Max 7 years jail.<br><b>Service Equivalent:</b> DFDA s47C."
+        };
+        out.innerHTML = val ? `<div class="nt-box">${ntMap[val]}</div>` : "";
+    }
+
+    function runSAM() {
+        const val = document.getElementById('samSel').value;
+        const out = document.getElementById('samRes');
+        const samMap = {
+            id: "<b>Defence Act s72P:</b> SAMDF may request name, address, and evidence of identity from a person in/entering a Defence Practice Area (DPA). Failure to comply is a criminal offence.",
+            search_v: "<b>Defence Act s72L:</b> Authorises SAMDF to stop and search vehicles, vessels, or aircraft in a DPA for prohibited items or for safety purposes.",
+            search_p: "<b>Defence Act s72M/N:</b> Frisk search or ordinary search. Ordinary search requires consent OR a reasonable belief of a threat to safety in a DPA.",
+            arrest: "<b>Defence Act s72Q:</b> Power to arrest without warrant for 'relevant offences' committed on Defence premises. Subject must be delivered to civilian police ASAP."
+        };
+        out.innerHTML = val ? `<div class="nt-box" style="border-color:var(--samdf)">${samMap[val]}</div>` : "";
+    }
+
+    function runLog() {
+        const val = document.getElementById('logSel').value;
+        const out = document.getElementById('logRes');
+        const logs = {
+            arrest_log: "DTG: [Time] LOC: [Location]\nAUTHORITY: s89(1) DFDA (Arrest without Warrant)\nNARRATIVE: Formed reasonable belief that subject committed [Offence]. Told subject: 'I am arresting you for [Offence]'.",
+            theft_log: "DTG: [Time] LOC: [Location]\nINCIDENT: s47C Theft\nNARRATIVE: Observed subject dishonestly appropriate [Item] with intent to permanently deprive [Owner].",
+            drunk: "DTG: [Time] LOC: [Location]\nNARRATIVE: Observed subject staggering. Speech slurred. Breath smelled of liquor. Logged under s60."
+        };
+        out.innerHTML = val ? `<div class="log-box">${logs[val]}</div>` : "";
+    }
+    window.onload = runSearch;
+</script>
+</body>
+</html>
