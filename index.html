@@ -3,70 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DFDA Field Pro - NT 2026</title>
+    <title>DFDA Field Pro 2026</title>
     <style>
-        :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --samdf: #2c3e50; --weapon: #333; }
-        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --samdf: #2c3e50; }
+        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
         
-        /* Fixed Header and Scrolling Tabs */
-        .header-nav { position: sticky; top: 0; z-index: 999; background: var(--navy); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .tab-bar { display: flex; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-        .tab-bar::-webkit-scrollbar { display: none; }
-        .tab { flex: 0 0 auto; padding: 15px 18px; text-align: center; color: rgba(255,255,255,0.7); cursor: pointer; font-weight: bold; font-size: 11px; border-bottom: 4px solid transparent; text-transform: uppercase; }
-        .tab.active { border-bottom: 4px solid var(--nt); background: rgba(255,255,255,0.1); color: #fff; }
+        /* Navigation */
+        .header-nav { position: sticky; top: 0; z-index: 1000; background: var(--navy); display: flex; overflow-x: auto; border-bottom: 3px solid var(--nt); }
+        .tab { padding: 15px 20px; color: white; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; white-space: nowrap; flex: 1; text-align: center; border: none; background: none; opacity: 0.7; }
+        .tab.active { opacity: 1; background: rgba(255,255,255,0.15); border-bottom: 3px solid white; }
 
-        .container { max-width: 700px; margin: auto; padding: 15px; padding-bottom: 50px; }
-        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; display: block; background: white; }
+        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .view { display: none; }
+        .view.active { display: block; }
         
-        .card { background: white; margin-bottom: 15px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
-        .card.offence { border-left-color: var(--law); }
-        .card.power { border-left-color: var(--navy); }
-        .card.samdf { border-left-color: var(--samdf); }
-        .card.weapon { border-left-color: var(--weapon); }
-
-        .card-header { padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold; color: var(--navy); font-size: 14px; }
-        .card-body { padding: 15px; font-size: 14px; line-height: 1.5; color: #333; }
+        /* Cards */
+        .card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; border-left: 8px solid var(--army); overflow: hidden; }
+        .card-header { background: #f8f9fa; padding: 12px; font-weight: bold; border-bottom: 1px solid #eee; color: var(--navy); }
+        .card-body { padding: 15px; font-size: 14px; line-height: 1.4; }
         
-        .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt); margin-top: 5px; }
-        .weapon-img { width: 100%; height: auto; border-radius: 5px; margin-top: 10px; border: 1px solid #ddd; }
-        .log-box { background: #1a1a1a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #00ff00; white-space: pre-wrap; margin-top: 5px; }
-        
-        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; font-family: sans-serif; }
-        .hidden { display: none !important; }
-        .legal-detail { color: #555; font-style: italic; margin-top: 8px; display: block; border-top: 1px solid #eee; padding-top: 8px; font-size: 12.5px; }
+        .search-box, .select-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .nt-box { background: #fff4ed; padding: 10px; border-radius: 6px; border: 1px solid var(--nt); margin-top: 10px; }
+        .weapon-img { width: 100%; border-radius: 4px; margin-top: 10px; }
+        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; padding: 8px; border-radius: 4px; height: 60px; }
+        .legal { color: #666; font-size: 12px; font-style: italic; display: block; margin-top: 8px; border-top: 1px solid #eee; padding-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="header-nav">
-    <div class="tab-bar">
-        <div class="tab active" onclick="nav(this, 'ref')">DFDA</div>
-        <div class="tab" onclick="nav(this, 'nt')">NT Police</div>
-        <div class="tab" onclick="nav(this, 'samdf')">SAMDF</div>
-        <div class="tab" onclick="nav(this, 'wep')">NT Weapons</div>
-        <div class="tab" onclick="nav(this, 'log')">Logs</div>
-    </div>
+    <button class="tab active" onclick="showView(this, 'v-ref')">DFDA</button>
+    <button class="tab" onclick="showView(this, 'v-nt')">NT Police</button>
+    <button class="tab" onclick="showView(this, 'v-samdf')">SAMDF</button>
+    <button class="tab" onclick="showView(this, 'v-wep')">Weapons</button>
+    <button class="tab" onclick="showView(this, 'v-log')">Logs</button>
 </div>
 
 <div class="container">
-    <div id="v-ref" class="view">
-        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (e.g. s89, s31, s47C)...">
-        <div id="searchRes"></div>
+    <div id="v-ref" class="view active">
+        <input type="text" class="search-box" oninput="doSearch(this.value)" placeholder="Search (s89, s31, theft)...">
+        <div id="dfda-list"></div>
     </div>
 
-    <div id="v-nt" class="view hidden">
+    <div id="v-nt" class="view">
         <div class="card" style="border-left-color: var(--nt)">
-            <div class="card-header">NT Police Comparison</div>
+            <div class="card-header">NT Police Equivalents</div>
             <div class="card-body">
-                <select class="select-input" onchange="updateNT(this.value)">
-                    <option value="">-- Choose Incident --</option>
-                    <option value="dui">DUI / Drink Driving</option>
-                    <option value="assault">Common Assault (s188)</option>
-                    <option value="theft">Theft / Stealing (s210)</option>
-                </select>
-                <div id="ntRes"></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="v-samdf" class="view hidden">
+                <select class="select-input" onchange="document.getElementById('nt-out').innerHTML = ntData[this.value] || ''">
+                    <option value="">-- Select --</option>
