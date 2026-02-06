@@ -6,65 +6,76 @@
     <title>DFDA Field Pro</title>
     <style>
         :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --gold: #c5a059; }
-        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
-        .tab-bar { display: flex; background: var(--navy); position: sticky; top: 0; z-index: 100; }
-        .tab { flex: 1; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; font-size: 0.8em; }
-        .tab.active { background: var(--gold); color: var(--navy); }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
+        
+        /* Navigation Tabs */
+        .tab-bar { display: flex; background: var(--navy); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .tab { flex: 1; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; font-size: 0.85em; transition: 0.3s; border-bottom: 3px solid transparent; }
+        .tab.active { border-bottom: 3px solid var(--gold); background: rgba(255,255,255,0.1); }
+
         .container { max-width: 700px; margin: auto; padding: 15px; }
-        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
+        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; outline: none; }
+        .search-box:focus { border-color: var(--navy); }
+        
         .card { background: white; margin-bottom: 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
         .card.power { border-left-color: var(--navy); }
         .card.punishment { border-left-color: var(--law); }
         .card-header { padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .card-body { padding: 15px; font-size: 0.95em; line-height: 1.4; }
-        .s-tag { font-weight: bold; color: var(--law); }
+        
+        .s-tag { font-weight: bold; color: var(--law); font-size: 1.1em; }
         .badge { font-size: 0.7em; padding: 3px 8px; border-radius: 12px; color: white; text-transform: uppercase; }
         .bg-offence { background: var(--army); }
         .bg-power { background: var(--navy); }
         .bg-law { background: var(--law); }
-        .template-box { background: #eef; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 0.9em; margin-top: 10px; border: 1px solid #ccc; white-space: pre-wrap; }
-        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px; padding: 8px; background: #fffdf0; box-sizing: border-box; }
-        .hidden { display: none; }
+
+        .template-box { background: #f4f4f9; padding: 15px; border-radius: 5px; font-family: 'Courier New', Courier, monospace; font-size: 0.95em; margin-top: 10px; border: 1px solid #ccc; color: #333; line-height: 1.5; }
+        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px; padding: 8px; background: #fffdf0; box-sizing: border-box; font-family: inherit; }
+        
+        .hidden { display: none !important; }
+        .calc-res { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div class="tab-bar">
-    <div class="tab active" onclick="showTab('guide')">REF</div>
-    <div class="tab" onclick="showTab('calc')">CALC</div>
-    <div class="tab" onclick="showTab('draft')">DRAFTER</div>
+    <div class="tab active" id="btn-guide" onclick="switchView('guide')">REFERENCE</div>
+    <div class="tab" id="btn-calc" onclick="switchView('calc')">CALCULATOR</div>
+    <div class="tab" id="btn-draft" onclick="switchView('draft')">DRAFTER</div>
 </div>
 
 <div class="container">
     <div id="view-guide">
-        <input type="text" class="search-box" id="search" oninput="render()" placeholder="Search (e.g. 's60', 'police', 'arrest')...">
+        <input type="text" class="search-box" id="search" oninput="doSearch()" placeholder="Search Section, Offence or Power...">
         <div id="results"></div>
     </div>
 
     <div id="view-calc" class="hidden">
         <div class="card punishment">
-            <div class="card-header"><strong>Summary Authority Calculator</strong></div>
+            <div class="card-header"><strong>CO Punishment Powers</strong></div>
             <div class="card-body">
-                <select id="rankSelect" class="select-input" onchange="runCalc()">
-                    <option value="">-- Select Rank of Accused --</option>
-                    <option value="officer">Officer (LT - MAJ eqvt)</option>
-                    <option value="snco">Senior NCO (SGT - WO eqvt)</option>
-                    <option value="jr">Junior Rank (PTE - CPL eqvt)</option>
+                <p>Select member rank to see max penalties:</p>
+                <select id="rankSelect" class="select-input" onchange="doCalc()">
+                    <option value="">-- Select Rank --</option>
+                    <option value="officer">Officer (LT - MAJ)</option>
+                    <option value="snco">Senior NCO (SGT - WO)</option>
+                    <option value="jr">Junior Rank (PTE - CPL)</option>
                 </select>
-                <div id="calcOutput" style="background:white; padding:10px; border-radius:5px; border:1px solid #ddd;">Results...</div>
+                <div id="calcOutput" class="calc-res">Please select a rank...</div>
             </div>
         </div>
     </div>
 
     <div id="view-draft" class="hidden">
         <div class="card">
-            <div class="card-header"><strong>Charge Particulars Drafter</strong></div>
+            <div class="card-header"><strong>Charge Template</strong></div>
             <div class="card-body">
-                <select id="draftSelect" class="select-input" onchange="runDraft()">
+                <p>Select offence for drafting particulars:</p>
+                <select id="draftSelect" class="select-input" onchange="doDraft()">
                     <option value="">-- Choose Offence --</option>
                     <option value="s60">s60 - Prejudicial Conduct</option>
-                    <option value="s31">s31 - Obstructing Service Police</option>
-                    <option value="s33">s33 - Assaulting a Superior</option>
+                    <option value="s31">s31 - Obstructing Police</option>
+                    <option value="s33">s33 - Assault Superior</option>
                     <option value="s24">s24 - AWOL</option>
                 </select>
                 <div id="draftOutput"></div>
@@ -74,82 +85,80 @@
 </div>
 
 <script>
+    // 1. Data Definitions
     const dfdaData = [
-        { s: "s31", cat: "power", title: "Obstructing Service Police", desc: "Offence of hindering, resisting, or refusing to assist a service police member in the execution of duty." },
-        { s: "s60", cat: "offence", title: "Prejudicial Conduct", desc: "Acts likely to prejudice the discipline of, or bring discredit on, the Defence Force." },
-        { s: "s87", cat: "power", title: "Arrest without Warrant", desc: "Authority to arrest if there is reasonable belief of a service offence." },
-        { s: "s101", cat: "power", title: "Search of Person", desc: "Search authority for persons in custody or under arrest." },
-        { s: "s24", cat: "offence", title: "Absence Without Leave (AWOL)", desc: "Absent from place of duty without authority." },
-        { s: "s33", cat: "offence", title: "Assaulting a Superior Officer", desc: "Physical contact or threatening behavior toward a superior." }
+        { s: "s24", cat: "offence", title: "AWOL", desc: "Absence from place of duty without authority." },
+        { s: "s31", cat: "power", title: "Obstructing Service Police", desc: "Hindering or refusing to assist a service police member in execution of duty." },
+        { s: "s33", cat: "offence", title: "Assaulting a Superior", desc: "Physical contact or threatening behavior toward a superior officer." },
+        { s: "s60", cat: "offence", title: "Prejudicial Conduct", desc: "Conduct likely to prejudice the discipline or discredit the Defence Force." },
+        { s: "s87", cat: "power", title: "Arrest without Warrant", desc: "Authority for service police and certain members to arrest on reasonable belief." },
+        { s: "s101", cat: "power", title: "Search and Seizure", desc: "Power to search arrested persons and seize evidence." }
     ];
 
-    function showTab(tab) {
-        ['guide', 'calc', 'draft'].forEach(v => {
-            document.getElementById('view-' + v).classList.toggle('hidden', v !== tab);
-        });
-        const tabs = document.querySelectorAll('.tab');
-        tabs.forEach((t, i) => t.classList.toggle('active', ['guide', 'calc', 'draft'][i] === tab));
+    // 2. Tab Switching Logic
+    function switchView(target) {
+        // Hide all views
+        document.getElementById('view-guide').classList.add('hidden');
+        document.getElementById('view-calc').classList.add('hidden');
+        document.getElementById('view-draft').classList.add('hidden');
+        
+        // Deactivate all tabs
+        document.getElementById('btn-guide').classList.remove('active');
+        document.getElementById('btn-calc').classList.remove('active');
+        document.getElementById('btn-draft').classList.remove('active');
+
+        // Show target view & activate target tab
+        document.getElementById('view-' + target).classList.remove('hidden');
+        document.getElementById('btn-' + target).classList.add('active');
     }
 
-    function render() {
-        const q = document.getElementById('search').value.toLowerCase().trim();
+    // 3. Search Logic
+    function doSearch() {
+        const q = document.getElementById('search').value.toLowerCase();
         const res = document.getElementById('results');
         res.innerHTML = '';
-        
-        const filtered = dfdaData.filter(i => {
-            return i.title.toLowerCase().includes(q) || 
-                   i.s.toLowerCase().includes(q) || 
-                   i.desc.toLowerCase().includes(q);
-        });
 
-        if (filtered.length === 0) {
-            res.innerHTML = '<p style="text-align:center; color:#666;">No sections found. Try a different term.</p>';
-            return;
-        }
-
-        filtered.forEach(i => {
-            const noteKey = 'note-' + i.s;
-            const savedNote = localStorage.getItem(noteKey) || '';
+        dfdaData.filter(i => i.title.toLowerCase().includes(q) || i.s.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q))
+        .forEach(i => {
+            const note = localStorage.getItem('note-' + i.s) || '';
             res.innerHTML += `
                 <div class="card ${i.cat}">
-                    <div class="card-header">
-                        <span class="s-tag">${i.s}</span>
-                        <span class="badge bg-${i.cat}">${i.cat}</span>
-                    </div>
-                    <div class="card-body">
-                        <strong>${i.title}</strong>
-                        <p>${i.desc}</p>
-                        <textarea placeholder="Add private notes..." oninput="localStorage.setItem('note-${i.s}', this.value)">${savedNote}</textarea>
-                    </div>
+                    <div class="card-header"><span class="s-tag">${i.s}</span><span class="badge bg-${i.cat}">${i.cat}</span></div>
+                    <div class="card-body"><strong>${i.title}</strong><p>${i.desc}</p>
+                    <textarea placeholder="Field notes..." oninput="localStorage.setItem('note-${i.s}', this.value)">${note}</textarea></div>
                 </div>`;
         });
     }
 
-    function runCalc() {
-        const rank = document.getElementById('rankSelect').value;
+    // 4. Calculator Logic
+    function doCalc() {
+        const val = document.getElementById('rankSelect').value;
         const out = document.getElementById('calcOutput');
+        if(!val) { out.innerHTML = "Please select a rank..."; return; }
+        
         const maps = {
-            officer: "<b>CO Power (Officer):</b><br>• Fine: 14 days pay<br>• Reprimand",
-            snco: "<b>CO Power (SNCO):</b><br>• Fine: 28 days pay<br>• Reduction in Rank (1 grade)",
-            jr: "<b>CO Power (Junior Rank):</b><br>• Detention: 28 days<br>• Fine: 28 days pay<br>• Reduction in Rank"
+            officer: "<b>Max CO Powers (Officer):</b><br>• Fine: 14 days pay<br>• Reprimand / Severe Reprimand",
+            snco: "<b>Max CO Powers (SNCO):</b><br>• Fine: 28 days pay<br>• Reduction in Rank (1 grade)<br>• Reprimand",
+            jr: "<b>Max CO Powers (Junior Rank):</b><br>• Detention: 28 days<br>• Fine: 28 days pay<br>• Reduction in Rank<br>• Extra Duties (7 days)"
         };
-        out.innerHTML = maps[rank] || "Select a rank.";
+        out.innerHTML = maps[val];
     }
 
-    function runDraft() {
-        const code = document.getElementById('draftSelect').value;
+    // 5. Drafter Logic
+    function doDraft() {
+        const val = document.getElementById('draftSelect').value;
         const out = document.getElementById('draftOutput');
         const drafts = {
-            s60: "That you [Rank, Name, PMKeyS], being a defence member, did at [Place] on or about [Date] behave in a manner likely to prejudice the discipline of the Defence Force...",
-            s31: "That you [Rank, Name, PMKeyS], being a defence member, did at [Place] on or about [Date] obstruct [Rank/Name of Police Member]...",
-            s33: "That you [Rank, Name, PMKeyS], being a defence member, did at [Place] on or about [Date] assault [Rank/Name], a superior officer.",
-            s24: "That you [Rank, Name, PMKeyS], being a defence member, did at [Place] between [Start Date] and [End Date] absent yourself..."
+            s60: "That you [Rank, Name], being a defence member, did at [Place] on or about [Date] behave in a manner likely to prejudice the discipline of the Defence Force, in that you [Specific Action].",
+            s31: "That you [Rank, Name], being a defence member, did at [Place] on or about [Date] obstruct [Rank/Name of Police Member], a service police member, in the execution of their duty.",
+            s33: "That you [Rank, Name], being a defence member, did at [Place] on or about [Date] assault [Rank/Name], a superior officer.",
+            s24: "That you [Rank, Name], being a defence member, did at [Place] between [Start Date] and [End Date] absent yourself from your place of duty without authority."
         };
-        out.innerHTML = drafts[code] ? `<div class="template-box">${drafts[code]}</div>` : "";
+        out.innerHTML = val ? `<div class="template-box">${drafts[val]}</div>` : "";
     }
 
-    // Initial render call
-    render();
+    // Initialize
+    doSearch();
 </script>
 </body>
 </html>
