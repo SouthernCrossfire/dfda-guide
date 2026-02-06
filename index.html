@@ -76,4 +76,94 @@
                     <option value="">-- Select SAMDF Power --</option>
                     <option value="id">Request Identification</option>
                     <option value="search_v">Search Vehicles/Vessels</option>
-                    <option value="search_p">Search Person (Consent/Non-consent)</option
+                    <option value="search_p">Search Person (Consent/Non-consent)</option>
+                    <option value="arrest">Arrest & Detain</option>
+                </select>
+                <div id="samRes"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="v-log" class="hidden">
+        <div class="card" style="border-left-color: var(--navy)">
+            <div class="card-header">Field Log Templates</div>
+            <div class="card-body">
+                <select id="logSel" class="select-input" onchange="runLog()">
+                    <option value="">-- Choose Occurrence --</option>
+                    <option value="drunk">s60 - Intoxication Entry</option>
+                    <option value="theft_log">s47C - Theft Observation</option>
+                    <option value="sam_id">SAMDF - Identification Refusal</option>
+                </select>
+                <div id="logRes"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const dfdaData = [
+        { s: "s31", title: "Obstructing Service Police", cat: "offence", desc: "Offence to hinder or resist a service police member in the execution of duty." },
+        { s: "s33", title: "Assaulting a Superior", cat: "offence", desc: "Assaulting or threatening a superior officer." },
+        { s: "s40", title: "Driving under Influence", cat: "offence", desc: "Driving a service vehicle while impaired by alcohol or drugs." },
+        { s: "s47C", title: "Theft", cat: "offence", desc: "Dishonestly appropriating property belonging to another." },
+        { s: "s60", title: "Prejudicial Conduct", cat: "offence", desc: "Conduct likely to prejudice discipline or discredit the ADF." },
+        { s: "s87", title: "Arrest Without Warrant", cat: "power", desc: "Authority to arrest on reasonable belief of a service offence." },
+        { s: "s101", title: "Search and Seizure", cat: "power", desc: "Authority to search person and premises incidental to arrest." }
+    ];
+
+    function nav(id) {
+        ['v-ref', 'v-nt', 'v-samdf', 'v-log'].forEach(v => document.getElementById(v).classList.add('hidden'));
+        document.getElementById('v-' + id).classList.remove('hidden');
+        ['t-ref', 't-nt', 't-samdf', 't-log'].forEach(t => document.getElementById(t).classList.remove('active'));
+        document.getElementById('t-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function runSearch() {
+        const q = document.getElementById('searchInp').value.toLowerCase().trim();
+        const out = document.getElementById('searchRes');
+        out.innerHTML = '';
+        dfdaData.filter(i => i.s.toLowerCase().includes(q) || i.title.toLowerCase().includes(q))
+            .forEach(i => {
+                const noteVal = localStorage.getItem('n-'+i.s) || '';
+                out.innerHTML += `<div class="card ${i.cat}"><div class="card-header"><span>${i.s}</span> <span class="badge bg-${i.cat}">${i.cat}</span></div><div class="card-body"><strong>${i.title}</strong><br>${i.desc}<textarea placeholder="Field notes..." oninput="localStorage.setItem('n-${i.s}', this.value)">${noteVal}</textarea></div></div>`;
+            });
+    }
+
+    function runNT() {
+        const val = document.getElementById('ntSel').value;
+        const out = document.getElementById('ntRes');
+        const ntMap = {
+            dui: "<b>NT Traffic Act s25:</b> High Range Penalty = 20 Units (~$3,620). <br><b>Service:</b> DFDA s40.",
+            assault: "<b>NT Code s188:</b> Common Assault = 2 yrs jail. <br><b>Service:</b> DFDA s33 or s61.",
+            theft: "<b>NT Code s210:</b> Stealing = 7 yrs jail. <br><b>Service:</b> DFDA s47C."
+        };
+        out.innerHTML = val ? `<div class="nt-box">${ntMap[val]}<br><br><small><i>NT Penalty Unit = $181.</i></small></div>` : "";
+    }
+
+    function runSAM() {
+        const val = document.getElementById('samSel').value;
+        const out = document.getElementById('samRes');
+        const samMap = {
+            id: "<b>Request ID:</b> SAMDF may request name, address, and proof of identity if a person is in/entering a Defence Practice Area (DPA). Refusal is an offence under s72P of the Defence Act.",
+            search_v: "<b>Vehicle Search:</b> SAMDF may search vehicles/vessels in a DPA for prohibited items. Includes power to stop and detain the vehicle for the search duration.",
+            search_p: "<b>Person Search:</b> May conduct a frisk/ordinary search with consent. Without consent, search is only authorised if there is a 'threat to safety' or if directed by a commissioned officer.",
+            arrest: "<b>Arrest Power:</b> SAMDF may arrest without warrant any person on Defence premises if they reasonably believe the person has committed a 'relevant offence' (e.g., trespassing or theft)."
+        };
+        out.innerHTML = val ? `<div class="nt-box" style="border-color:var(--samdf)">${samMap[val]}</div>` : "";
+    }
+
+    function runLog() {
+        const val = document.getElementById('logSel').value;
+        const out = document.getElementById('logRes');
+        const logs = {
+            drunk: "DTG: [Time] LOC: [Location]\nNARRATIVE: Observed subject staggering. Breath smelled of liquor.",
+            theft_log: "DTG: [Time] LOC: [Location]\nINCIDENT: s47C Theft\nNARRATIVE: Observed subject conceal [Item] belonging to [Entity].",
+            sam_id: "DTG: [Time] LOC: [Entry Point]\nINCIDENT: Refusal to provide ID to SAMDF (s72P Defence Act).\nNARRATIVE: Requested ID from subject at gate. Subject stated 'No' and attempted to push past. Cautioned subject. Subject remained non-compliant."
+        };
+        out.innerHTML = val ? `<div class="log-box">${logs[val]}</div>` : "";
+    }
+    window.onload = runSearch;
+</script>
+</body>
+</html>
