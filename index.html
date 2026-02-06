@@ -3,22 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFDA Field Guide & Calc</title>
+    <title>DFDA Field Pro</title>
     <style>
         :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --gold: #c5a059; }
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
         
-        /* Navigation Tabs */
         .tab-bar { display: flex; background: var(--navy); position: sticky; top: 0; z-index: 100; }
-        .tab { flex: 1; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; font-size: 0.9em; }
+        .tab { flex: 1; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; font-size: 0.8em; }
         .tab.active { background: var(--gold); color: var(--navy); }
 
         .container { max-width: 700px; margin: auto; padding: 15px; }
-        
-        /* Search & Inputs */
         .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
         
-        /* Cards */
         .card { background: white; margin-bottom: 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
         .card.power { border-left-color: var(--navy); }
         .card.punishment { border-left-color: var(--law); }
@@ -31,77 +27,45 @@
         .bg-power { background: var(--navy); }
         .bg-law { background: var(--law); }
 
+        .template-box { background: #eef; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 0.9em; margin-top: 10px; border: 1px solid #ccc; white-space: pre-wrap; }
         textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px; padding: 8px; background: #fffdf0; box-sizing: border-box; }
-        
         .hidden { display: none; }
-        .calc-res { background: #f9f9f9; padding: 15px; border-radius: 8px; border: 1px dashed var(--gold); }
     </style>
 </head>
 <body>
 
 <div class="tab-bar">
-    <div class="tab active" id="tab-guide" onclick="showTab('guide')">REFERENCE</div>
-    <div class="tab" id="tab-calc" onclick="showTab('calc')">CALCULATOR</div>
+    <div class="tab active" onclick="showTab('guide')">REF</div>
+    <div class="tab" onclick="showTab('calc')">CALC</div>
+    <div class="tab" onclick="showTab('draft')">DRAFTER</div>
 </div>
 
 <div class="container">
     <div id="view-guide">
-        <input type="text" class="search-box" id="search" onkeyup="render()" placeholder="Search Section, Power, or Offence...">
+        <input type="text" class="search-box" id="search" onkeyup="render()" placeholder="Search Section or Power...">
         <div id="results"></div>
     </div>
 
     <div id="view-calc" class="hidden">
-        <div class="card">
-            <div class="card-header"><strong>Summary Authority Calculator</strong></div>
+        <div class="card punishment">
+            <div class="card-header"><strong>Summary Authority Powers</strong></div>
             <div class="card-body">
-                <p>Select the rank of the accused to see maximum powers of a Commanding Officer (CO):</p>
                 <select id="rankSelect" class="select-input" onchange="runCalc()">
-                    <option value="">-- Select Rank --</option>
-                    <option value="officer">Officer (LT - MAJ equivalent)</option>
-                    <option value="snco">Senior NCO (SGT - WO equivalent)</option>
-                    <option value="jr">Junior Rank (PTE - CPL equivalent)</option>
+                    <option value="">-- Select Rank of Accused --</option>
+                    <option value="officer">Officer (LT - MAJ eqvt)</option>
+                    <option value="snco">Senior NCO (SGT - WO eqvt)</option>
+                    <option value="jr">Junior Rank (PTE - CPL eqvt)</option>
                 </select>
-                <div id="calcOutput" class="calc-res">Result will appear here...</div>
+                <div id="calcOutput" style="background:white; padding:10px; border-radius:5px; border:1px solid #ddd;">Results...</div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    const dfdaData = [
-        { s: "s31", cat: "power", title: "Obstructing Service Police", desc: "Offence of hindering, resisting, or refusing to assist a service police member." },
-        { s: "s60", cat: "offence", title: "Prejudicial Conduct", desc: "The general 'catch-all' offence for conduct prejudicial to good order and discipline." },
-        { s: "s87", cat: "power", title: "Arrest without Warrant", desc: "Authority for service police to arrest based on reasonable belief of a service offence." },
-        { s: "s101", cat: "power", title: "Search of Person", desc: "Procedures and authorities for searching an individual under arrest." },
-        { s: "s101V", cat: "power", title: "Right to Counsel", desc: "Legal requirement to provide access to legal advice for persons in custody." },
-        { s: "s131", cat: "law", title: "Summary Punishment Limits", desc: "Statutory limits on punishments that can be awarded by a Summary Authority." }
-    ];
-
-    function showTab(tab) {
-        document.getElementById('view-guide').classList.toggle('hidden', tab !== 'guide');
-        document.getElementById('view-calc').classList.toggle('hidden', tab !== 'calc');
-        document.getElementById('tab-guide').classList.toggle('active', tab === 'guide');
-        document.getElementById('tab-calc').classList.toggle('active', tab === 'calc');
-    }
-
-    function saveNote(s, val) { localStorage.setItem('note-'+s, val); }
-
-    function render() {
-        const q = document.getElementById('search').value.toLowerCase();
-        const res = document.getElementById('results');
-        res.innerHTML = '';
-        dfdaData.filter(i => i.title.toLowerCase().includes(q) || i.s.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q))
-        .forEach(i => {
-            const note = localStorage.getItem('note-'+i.s) || '';
-            res.innerHTML += `<div class="card ${i.cat}">
-                <div class="card-header"><span class="s-tag">${i.s}</span><span class="badge bg-${i.cat}">${i.cat}</span></div>
-                <div class="card-body"><strong>${i.title}</strong><p>${i.desc}</p>
-                <textarea placeholder="Field notes..." oninput="saveNote('${i.s}', this.value)">${note}</textarea></div>
-            </div>`;
-        });
-    }
-
-    function runCalc() {
-        const rank = document.getElementById('rankSelect').value;
-        const out = document.getElementById('calcOutput');
-        if(!rank) return
+    <div id="view-draft" class="hidden">
+        <div class="card">
+            <div class="card-header"><strong>Charge Particulars Drafter</strong></div>
+            <div class="card-body">
+                <p>Select a common offence to see standard wording:</p>
+                <select id="draftSelect" class="select-input" onchange="runDraft()">
+                    <option value="">-- Choose Offence --</option>
+                    <option
