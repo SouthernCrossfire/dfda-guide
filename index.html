@@ -6,26 +6,27 @@
     <title>DFDA Field Pro</title>
     <style>
         :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --gold: #c5a059; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
+        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
         
-        .tab-bar { display: flex; background: var(--navy); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .tab { flex: 1; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; font-size: 0.85em; transition: 0.3s; border-bottom: 3px solid transparent; }
-        .tab.active { border-bottom: 3px solid var(--gold); background: rgba(255,255,255,0.1); }
+        .tab-bar { display: flex; background: var(--navy); position: sticky; top: 0; z-index: 100; }
+        .tab { flex: 1; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; font-size: 0.8em; }
+        .tab.active { border-bottom: 4px solid var(--gold); background: rgba(255,255,255,0.1); }
 
         .container { max-width: 700px; margin: auto; padding: 15px; }
-        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; outline: none; }
+        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
         
         .card { background: white; margin-bottom: 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
-        .card.power { border-left-color: var(--navy); }
-        .card.punishment { border-left-color: var(--law); }
-        .card-header { padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .card-header { padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold; }
         .card-body { padding: 15px; font-size: 0.95em; line-height: 1.4; }
         
-        .template-box { background: #1e1e1e; padding: 15px; border-radius: 5px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.85em; margin-top: 10px; border: 1px solid #333; color: #00ff00; line-height: 1.5; overflow-x: auto; }
-        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px; padding: 8px; background: #fffdf0; box-sizing: border-box; font-family: inherit; }
+        /* Tactical Log Style */
+        .log-box { background: #1a1a1a; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 0.85em; margin-top: 10px; border: 1px solid #333; color: #00ff00; line-height: 1.6; white-space: pre-wrap; position: relative; }
+        .log-box::before { content: "SYSTEM LOG / NOTEBOOK ENTRY"; display: block; color: #888; font-size: 0.7em; margin-bottom: 10px; border-bottom: 1px solid #333; }
         
+        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px; padding: 8px; background: #fffdf0; box-sizing: border-box; }
         .hidden { display: none !important; }
-        .calc-res { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-top: 10px; }
+        .badge { font-size: 0.7em; padding: 3px 8px; border-radius: 12px; color: white; text-transform: uppercase; float: right; }
+        .bg-power { background: var(--navy); }
     </style>
 </head>
 <body>
@@ -33,43 +34,43 @@
 <div class="tab-bar">
     <div class="tab active" id="btn-guide" onclick="switchView('guide')">REF</div>
     <div class="tab" id="btn-calc" onclick="switchView('calc')">CALC</div>
-    <div class="tab" id="btn-draft" onclick="switchView('draft')">LOG ENTRIES</div>
+    <div class="tab" id="btn-log" onclick="switchView('log')">OCCURRENCE LOG</div>
 </div>
 
 <div class="container">
     <div id="view-guide">
-        <input type="text" class="search-box" id="search" oninput="doSearch()" placeholder="Search Section, Offence or Power...">
+        <input type="text" class="search-box" id="search" oninput="doSearch()" placeholder="Search Offences/Powers...">
         <div id="results"></div>
     </div>
 
     <div id="view-calc" class="hidden">
-        <div class="card punishment">
-            <div class="card-header"><strong>CO Punishment Powers</strong></div>
+        <div class="card" style="border-left-color: var(--law)">
+            <div class="card-header">Summary Punishment Scale</div>
             <div class="card-body">
                 <select id="rankSelect" class="select-input" onchange="doCalc()">
-                    <option value="">-- Select Rank --</option>
+                    <option value="">-- Select Accused Rank --</option>
                     <option value="officer">Officer (LT - MAJ)</option>
                     <option value="snco">Senior NCO (SGT - WO)</option>
                     <option value="jr">Junior Rank (PTE - CPL)</option>
                 </select>
-                <div id="calcOutput" class="calc-res">Please select a rank...</div>
+                <div id="calcOutput" style="padding:10px; background:#f9f9f9; border-radius:5px;">Select a rank to see CO powers.</div>
             </div>
         </div>
     </div>
 
-    <div id="view-draft" class="hidden">
-        <div class="card power">
-            <div class="card-header"><strong>Occurrence Log / Notebook Templates</strong></div>
+    <div id="view-log" class="hidden">
+        <div class="card" style="border-left-color: var(--navy)">
+            <div class="card-header">Log Entry Templates</div>
             <div class="card-body">
-                <p>Select occurrence type for entry format:</p>
-                <select id="draftSelect" class="select-input" onchange="doDraft()">
-                    <option value="">-- Choose Occurrence --</option>
-                    <option value="arrest">Arrest Under s87</option>
-                    <option value="search">Search of Person s101</option>
-                    <option value="s60_log">s60 Prejudicial Conduct Entry</option>
-                    <option value="traffic">DUI / Traffic Incident</option>
+                <p>Select occurrence for example investigative notes:</p>
+                <select id="logSelect" class="select-input" onchange="doLogDraft()">
+                    <option value="">-- Choose Incident Type --</option>
+                    <option value="s60_drunk">s60 - Intoxication/Conduct</option>
+                    <option value="s31_obstruct">s31 - Obstruction of Police</option>
+                    <option value="s24_awol">s24 - Apprehension of AWOL</option>
+                    <option value="s101_search">s101 - Search of Person</option>
                 </select>
-                <div id="draftOutput"></div>
+                <div id="logOutput"></div>
             </div>
         </div>
     </div>
@@ -78,20 +79,15 @@
 <script>
     const dfdaData = [
         { s: "s24", cat: "offence", title: "AWOL", desc: "Absence from place of duty without authority." },
-        { s: "s31", cat: "power", title: "Obstructing Service Police", desc: "Hindering or refusing to assist a service police member in execution of duty." },
-        { s: "s33", cat: "offence", title: "Assaulting a Superior", desc: "Physical contact or threatening behavior toward a superior officer." },
-        { s: "s60", cat: "offence", title: "Prejudicial Conduct", desc: "Conduct likely to prejudice the discipline or discredit the Defence Force." },
-        { s: "s87", cat: "power", title: "Arrest without Warrant", desc: "Authority for service police and certain members to arrest on reasonable belief." },
-        { s: "s101", cat: "power", title: "Search and Seizure", desc: "Power to search arrested persons and seize evidence." }
+        { s: "s31", cat: "power", title: "Obstructing Service Police", desc: "Hindering or resisting a service police member in execution of duty." },
+        { s: "s60", cat: "offence", title: "Prejudicial Conduct", desc: "Conduct likely to prejudice discipline or discredit the DF." },
+        { s: "s87", cat: "power", title: "Arrest without Warrant", desc: "Power to arrest on reasonable belief of service offence." },
+        { s: "s101", cat: "power", title: "Search and Seizure", desc: "Search of person/premises incidental to arrest." }
     ];
 
     function switchView(target) {
-        document.getElementById('view-guide').classList.add('hidden');
-        document.getElementById('view-calc').classList.add('hidden');
-        document.getElementById('view-draft').classList.add('hidden');
-        document.getElementById('btn-guide').classList.remove('active');
-        document.getElementById('btn-calc').classList.remove('active');
-        document.getElementById('btn-draft').classList.remove('active');
+        ['view-guide', 'view-calc', 'view-log'].forEach(id => document.getElementById(id).classList.add('hidden'));
+        ['btn-guide', 'btn-calc', 'btn-log'].forEach(id => document.getElementById(id).classList.remove('active'));
         document.getElementById('view-' + target).classList.remove('hidden');
         document.getElementById('btn-' + target).classList.add('active');
     }
@@ -100,10 +96,9 @@
         const q = document.getElementById('search').value.toLowerCase();
         const res = document.getElementById('results');
         res.innerHTML = '';
-        dfdaData.filter(i => i.title.toLowerCase().includes(q) || i.s.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q))
-        .forEach(i => {
+        dfdaData.filter(i => i.title.toLowerCase().includes(q) || i.s.toLowerCase().includes(q)).forEach(i => {
             const note = localStorage.getItem('note-' + i.s) || '';
-            res.innerHTML += `<div class="card ${i.cat}"><div class="card-header"><strong>${i.s}</strong></div><div class="card-body"><strong>${i.title}</strong><p>${i.desc}</p><textarea placeholder="Field notes..." oninput="localStorage.setItem('note-${i.s}', this.value)">${note}</textarea></div></div>`;
+            res.innerHTML += `<div class="card"><div class="card-header">${i.s}<span class="badge bg-power">${i.cat}</span></div><div class="card-body"><strong>${i.title}</strong><p>${i.desc}</p><textarea placeholder="Private notes..." oninput="localStorage.setItem('note-${i.s}', this.value)">${note}</textarea></div></div>`;
         });
     }
 
@@ -111,25 +106,4 @@
         const val = document.getElementById('rankSelect').value;
         const out = document.getElementById('calcOutput');
         const maps = {
-            officer: "<b>Officer:</b> 14 days fine, Reprimand.",
-            snco: "<b>SNCO:</b> 28 days fine, 1 grade reduction, Reprimand.",
-            jr: "<b>JR:</b> 28 days detention, 28 days fine, Reduction, 7 days extra duties."
-        };
-        out.innerHTML = maps[val] || "Select rank...";
-    }
-
-    function doDraft() {
-        const val = document.getElementById('draftSelect').value;
-        const out = document.getElementById('draftOutput');
-        const drafts = {
-            arrest: "TIME: [HHMM] DATE: [DDMMYY]\nLOCATION: [Building/Area]\nPERSON: [Rank, Name, PMKeyS]\nNARRATIVE: I, [My Rank/Name], formed the reasonable belief that the subject had committed an offence under [sXX]. At [Time], I informed the subject they were under arrest. I cautioned the subject as per DFDA s101S. Subject stated: '[Response]'.",
-            search: "TIME: [HHMM] LOCATION: [Detailed Location]\nAUTHORITY: Search incidental to arrest under s101.\nOBSERVATIONS: Subject was asked to turn out pockets. I located [Item Description] in the [Left/Right Pocket]. Item seized at [Time] and secured in [Evidence Bag #].",
-            s60_log: "OCCURRENCE: Conduct Prejudicial to Good Order/Discipline.\nOBSERVATIONS: While on patrol at [Location], I observed the subject [Describe Action - e.g. shouting profanities at duty staff]. Subject's breath smelled of alcohol. Subject's uniform was [Dishevelled/Incorrect]. Action taken: Subject directed to return to lines / Subject escorted to [Duty Office].",
-            traffic: "VEHICLE: [Type/Rego]\nINCIDENT: Observed vehicle [Describe Driving - e.g. swerving]. Intercepted at [Location]. Subject breath test (PBT) result: [0.0XX]. Subject's speech was [Slurred/Clear]. Eyes were [Bloodshot/Normal]."
-        };
-        out.innerHTML = val ? `<div class="template-box">${drafts[val]}</div>` : "";
-    }
-    doSearch();
-</script>
-</body>
-</html>
+            officer
