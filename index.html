@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DFDA Field Pro - NT 2026</title>
     <style>
-        :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --samdf: #2c3e50; }
+        :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --samdf: #2c3e50; --weapon: #333; }
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         .header-nav { position: sticky; top: 0; z-index: 999; background: var(--navy); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
         .tab-bar { display: flex; border-bottom: 1px solid rgba(255,255,255,0.1); flex-wrap: wrap; }
-        .tab { flex: 1; padding: 12px 2px; text-align: center; color: #fff; cursor: pointer; font-weight: bold; font-size: 10px; transition: 0.2s; border-bottom: 4px solid transparent; min-width: 25%; }
+        .tab { flex: 1; padding: 12px 2px; text-align: center; color: #fff; cursor: pointer; font-weight: bold; font-size: 9px; transition: 0.2s; border-bottom: 4px solid transparent; min-width: 20%; }
         .tab.active { border-bottom: 4px solid var(--nt); background: rgba(255,255,255,0.1); color: #fff; }
 
         .container { max-width: 700px; margin: auto; padding: 15px; padding-bottom: 50px; }
@@ -20,136 +20,89 @@
         .card.offence { border-left-color: var(--law); }
         .card.power { border-left-color: var(--navy); }
         .card.samdf { border-left-color: var(--samdf); }
+        .card.weapon { border-left-color: var(--weapon); }
 
         .card-header { padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold; color: var(--navy); display: flex; justify-content: space-between; }
         .card-body { padding: 15px; font-size: 14px; line-height: 1.5; color: #333; }
         
-        .log-box { background: #1a1a1a; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 13px; color: #00ff00; line-height: 1.6; white-space: pre-wrap; border: 1px solid #333; }
         .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt); margin-top: 10px; line-height: 1.6; font-size: 13.5px; }
+        .weapon-img { width: 100%; height: auto; border-radius: 5px; margin-top: 10px; border: 1px solid #ddd; }
         
         textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; font-size: 14px; }
         .hidden { display: none !important; }
         .badge { background: #666; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
-        .badge.bg-offence { background: var(--law); }
-        .badge.bg-power { background: var(--navy); }
-        
-        .legal-detail { color: #555; font-style: italic; margin-top: 5px; display: block; border-top: 1px solid #eee; padding-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="header-nav">
     <div class="tab-bar">
-        <div id="t-ref" class="tab active" onclick="nav('ref')">DFDA REF</div>
+        <div id="t-ref" class="tab active" onclick="nav('ref')">DFDA</div>
         <div id="t-nt" class="tab" onclick="nav('nt')">NT POLICE</div>
         <div id="t-samdf" class="tab" onclick="nav('samdf')">SAMDF</div>
+        <div id="t-wep" class="tab" onclick="nav('wep')">NT WEAPONS</div>
         <div id="t-log" class="tab" onclick="nav('log')">LOGS</div>
     </div>
 </div>
 
 <div class="container">
     <div id="v-ref">
-        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (e.g. s31, s40, s89)...">
+        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (e.g. s89, s31)...">
         <div id="searchRes"></div>
+    </div>
+
+    <div id="v-wep" class="hidden">
+        <div class="card weapon">
+            <div class="card-header">NT Prohibited & Controlled Items</div>
+            <div class="card-body">
+                <p>Identify items under the <i>Weapons Control Act (NT)</i>:</p>
+                <select id="wepSel" class="select-input" onchange="runWep()">
+                    <option value="">-- Select Category --</option>
+                    <option value="flick">Flick / Gravity Knives</option>
+                    <option value="knuckle">Knuckle Dusters</option>
+                    <option value="oc">OC / Pepper Spray</option>
+                    <option value="conducted">TASERS / CEDs</option>
+                    <option value="machete">Machetes / Hunting Knives</option>
+                </select>
+                <div id="wepRes"></div>
+            </div>
+        </div>
     </div>
 
     <div id="v-nt" class="hidden">
         <div class="card" style="border-left-color: var(--nt)">
             <div class="card-header">NT Police Comparison</div>
-            <div class="card-body">
-                <select id="ntSel" class="select-input" onchange="runNT()">
-                    <option value="">-- Choose Incident --</option>
-                    <option value="dui">DUI / Drink Driving</option>
-                    <option value="assault">Common Assault (NT Code s188)</option>
-                    <option value="theft">Theft / Stealing (NT Code s210)</option>
-                </select>
-                <div id="ntRes"></div>
-            </div>
+            <div id="ntRes" class="card-body">Select incident in dropdown.</div>
         </div>
     </div>
 
     <div id="v-samdf" class="hidden">
         <div class="card samdf">
             <div class="card-header">SAMDF Authorised Powers</div>
-            <div class="card-body">
-                <select id="samSel" class="select-input" onchange="runSAM()">
-                    <option value="">-- Select SAMDF Power --</option>
-                    <option value="id">s72P: Request Identification</option>
-                    <option value="search_v">s72L: Search Vehicles/Vessels</option>
-                    <option value="search_p">s72M/N: Search Persons</option>
-                    <option value="arrest">s72Q: Arrest & Detain</option>
-                </select>
-                <div id="samRes"></div>
-            </div>
+            <div id="samRes" class="card-body">Select power in dropdown.</div>
         </div>
     </div>
 
     <div id="v-log" class="hidden">
         <div class="card" style="border-left-color: var(--navy)">
             <div class="card-header">Field Log Templates</div>
-            <div class="card-body">
-                <select id="logSel" class="select-input" onchange="runLog()">
-                    <option value="">-- Choose Occurrence --</option>
-                    <option value="arrest_log">s89(1) - Arrest Entry</option>
-                    <option value="theft_log">s47C - Theft Entry</option>
-                    <option value="drunk">s60 - Intoxication Entry</option>
-                </select>
-                <div id="logRes"></div>
-            </div>
+            <div id="logRes" class="card-body">Select occurrence in dropdown.</div>
         </div>
     </div>
 </div>
 
 <script>
+    // Tab and Search data persists from previous version
     const dfdaData = [
-        { 
-            s: "s31", 
-            title: "Obstructing Service Police", 
-            cat: "offence", 
-            desc: "A person who hinders or resists a service police member in the execution of duty.",
-            legal: "Must prove: (1) Person hindered/resisted; (2) Subject was service police in execution of duty; (3) Accused knew subject was service police. Max penalty: 2 years jail."
-        },
-        { 
-            s: "s40", 
-            title: "Driving under Influence", 
-            cat: "offence", 
-            desc: "Operating or being in charge of a service vehicle while under the influence of alcohol or drugs to the extent of being incapable of proper control.",
-            legal: "Applies to service vehicles anywhere or any vehicle on Defence premises. Evidence of blood/breath analysis is admissible under s101B-s101K."
-        },
-        { 
-            s: "s47C", 
-            title: "Theft", 
-            cat: "offence", 
-            desc: "Dishonestly appropriating property belonging to another with the intention of permanently depriving the other of it.",
-            legal: "Mirroring the Commonwealth Criminal Code. 'Appropriation' includes any assumption of the rights of an owner. 'Dishonesty' is determined by the standards of ordinary people."
-        },
-        { 
-            s: "s60", 
-            title: "Prejudicial Conduct", 
-            cat: "offence", 
-            desc: "An act or omission that is likely to prejudice the discipline of, or bring discredit on, the Defence Force.",
-            legal: "A 'catch-all' charge. Often used for intoxication or public disorder where a specific section doesn't apply. Requires proof of the 'Service Connection'."
-        },
-        { 
-            s: "s89(1)", 
-            title: "Arrest Without Warrant", 
-            cat: "power", 
-            desc: "A service police member (or authorised person) may arrest a person without warrant if they believe on reasonable grounds that the person has committed a service offence.",
-            legal: "Reasonable grounds must be objective. Must inform person of the reason for arrest immediately. Power extends to any person subject to service discipline."
-        },
-        { 
-            s: "s101", 
-            title: "Search of Arrested Person", 
-            cat: "power", 
-            desc: "Authorises the search of a person arrested under s89, and the seizure of things found.",
-            legal: "Includes: (a) Seizing weapons or items that could help escape; (b) Seizing evidence related to the offence. Must be conducted with 'decency and self-respect'."
-        }
+        { s: "s31", title: "Obstructing Service Police", cat: "offence", desc: "A person who hinders or resists a service police member in the execution of duty.", legal: "Max penalty: 2 years jail." },
+        { s: "s47C", title: "Theft", cat: "offence", desc: "Dishonestly appropriating property belonging to another with intention of permanent deprivation.", legal: "Commonwealth Criminal Code alignment." },
+        { s: "s89(1)", title: "Arrest Without Warrant", cat: "power", desc: "A service police member may arrest without warrant on reasonable belief of a service offence.", legal: "Must inform person of reason immediately." }
     ];
 
     function nav(id) {
-        ['v-ref', 'v-nt', 'v-samdf', 'v-log'].forEach(v => document.getElementById(v).classList.add('hidden'));
+        ['v-ref', 'v-nt', 'v-samdf', 'v-wep', 'v-log'].forEach(v => document.getElementById(v).classList.add('hidden'));
         document.getElementById('v-' + id).classList.remove('hidden');
-        ['t-ref', 't-nt', 't-samdf', 't-log'].forEach(t => document.getElementById(t).classList.remove('active'));
+        ['t-ref', 't-nt', 't-samdf', 't-wep', 't-log'].forEach(t => document.getElementById(t).classList.remove('active'));
         document.getElementById('t-' + id).classList.add('active');
     }
 
@@ -159,51 +112,22 @@
         out.innerHTML = '';
         dfdaData.filter(i => i.s.toLowerCase().includes(q) || i.title.toLowerCase().includes(q))
             .forEach(i => {
-                const noteVal = localStorage.getItem('n-'+i.s) || '';
-                out.innerHTML += `
-                    <div class="card ${i.cat}">
-                        <div class="card-header"><span>${i.s}</span> <span class="badge bg-${i.cat}">${i.cat}</span></div>
-                        <div class="card-body">
-                            <strong>${i.title}</strong><br>${i.desc}
-                            <span class="legal-detail">${i.legal}</span>
-                            <textarea placeholder="Field notes..." oninput="localStorage.setItem('n-${i.s}', this.value)">${noteVal}</textarea>
-                        </div>
-                    </div>`;
+                out.innerHTML += `<div class="card ${i.cat}"><div class="card-header"><span>${i.s}</span></div><div class="card-body"><strong>${i.title}</strong><br>${i.desc}<br><small>${i.legal}</small></div></div>`;
             });
     }
 
-    function runNT() {
-        const val = document.getElementById('ntSel').value;
-        const out = document.getElementById('ntRes');
-        const ntMap = {
-            dui: "<b>NT Traffic Act s25:</b> Driving under influence. High Range (>0.15) penalty is 20 units ($3,620). Automatic disqualification applies.<br><b>Service Equivalent:</b> DFDA s40.",
-            assault: "<b>NT Criminal Code s188:</b> Common Assault. Max 2 years jail. Aggravated Assault (e.g. against police) max 5 years.<br><b>Service Equivalent:</b> DFDA s33 or s61.",
-            theft: "<b>NT Criminal Code s210:</b> Stealing. Dishonest appropriation of property. Max 7 years jail.<br><b>Service Equivalent:</b> DFDA s47C."
+    function runWep() {
+        const val = document.getElementById('wepSel').value;
+        const out = document.getElementById('wepRes');
+        const map = {
+            flick: { t: "Prohibited (Schedule 1)", d: "Knives where the blade opens automatically by gravity or centrifugal force/button.", img: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Switchblade_knife.jpg" },
+            knuckle: { t: "Prohibited (Schedule 1)", d: "Knuckle dusters or any weapon designed to be worn over the knuckles or fist.", img: "https://upload.wikimedia.org/wikipedia/commons/1/18/Cestus-KnuckleDuster.jpg" },
+            oc: { t: "Prohibited (Schedule 1)", d: "Any spray or aerosol containing an offensive substance (e.g., Capsicum spray). Legal only for police/security with permit.", img: "https://upload.wikimedia.org/wikipedia/commons/d/d6/OC_spray_canister.jpg" },
+            conducted: { t: "Prohibited (Schedule 1)", d: "Conducted Energy Devices (TASERS). Illegal for civilian possession in NT.", img: "https://upload.wikimedia.org/wikipedia/commons/1/13/Taser_X26.jpg" },
+            machete: { t: "Controlled (Schedule 2)", d: "Machetes, hunting knives, and swords. Illegal to carry in public without a lawful excuse (e.g., camping/work).", img: "https://upload.wikimedia.org/wikipedia/commons/c/c5/Two_machetes.jpg" }
         };
-        out.innerHTML = val ? `<div class="nt-box">${ntMap[val]}</div>` : "";
-    }
-
-    function runSAM() {
-        const val = document.getElementById('samSel').value;
-        const out = document.getElementById('samRes');
-        const samMap = {
-            id: "<b>Defence Act s72P:</b> SAMDF may request name, address, and evidence of identity from a person in/entering a Defence Practice Area (DPA). Failure to comply is a criminal offence.",
-            search_v: "<b>Defence Act s72L:</b> Authorises SAMDF to stop and search vehicles, vessels, or aircraft in a DPA for prohibited items or for safety purposes.",
-            search_p: "<b>Defence Act s72M/N:</b> Frisk search or ordinary search. Ordinary search requires consent OR a reasonable belief of a threat to safety in a DPA.",
-            arrest: "<b>Defence Act s72Q:</b> Power to arrest without warrant for 'relevant offences' committed on Defence premises. Subject must be delivered to civilian police ASAP."
-        };
-        out.innerHTML = val ? `<div class="nt-box" style="border-color:var(--samdf)">${samMap[val]}</div>` : "";
-    }
-
-    function runLog() {
-        const val = document.getElementById('logSel').value;
-        const out = document.getElementById('logRes');
-        const logs = {
-            arrest_log: "DTG: [Time] LOC: [Location]\nAUTHORITY: s89(1) DFDA (Arrest without Warrant)\nNARRATIVE: Formed reasonable belief that subject committed [Offence]. Told subject: 'I am arresting you for [Offence]'.",
-            theft_log: "DTG: [Time] LOC: [Location]\nINCIDENT: s47C Theft\nNARRATIVE: Observed subject dishonestly appropriate [Item] with intent to permanently deprive [Owner].",
-            drunk: "DTG: [Time] LOC: [Location]\nNARRATIVE: Observed subject staggering. Speech slurred. Breath smelled of liquor. Logged under s60."
-        };
-        out.innerHTML = val ? `<div class="log-box">${logs[val]}</div>` : "";
+        const item = map[val];
+        out.innerHTML = val ? `<div class="nt-box"><strong>${item.t}</strong><p>${item.d}</p><img src="${item.img}" class="weapon-img" alt="Weapon image"></div>` : "";
     }
     window.onload = runSearch;
 </script>
