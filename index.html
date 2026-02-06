@@ -3,51 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DFDA Field Pro 2026</title>
+    <title>DFDA Field Pro Restored</title>
     <style>
         :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --samdf: #2c3e50; }
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
         
-        /* Navigation */
-        .header-nav { position: sticky; top: 0; z-index: 1000; background: var(--navy); display: flex; overflow-x: auto; border-bottom: 3px solid var(--nt); }
-        .tab { padding: 15px 20px; color: white; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; white-space: nowrap; flex: 1; text-align: center; border: none; background: none; opacity: 0.7; }
-        .tab.active { opacity: 1; background: rgba(255,255,255,0.15); border-bottom: 3px solid white; }
+        /* Fixed Header */
+        .header-nav { position: sticky; top: 0; z-index: 1000; background: var(--navy); display: flex; border-bottom: 3px solid var(--nt); }
+        .tab { padding: 15px 5px; color: white; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; flex: 1; text-align: center; border: none; background: none; opacity: 0.6; transition: 0.2s; }
+        .tab.active { opacity: 1; background: rgba(255,255,255,0.1); border-bottom: 4px solid white; }
 
-        .container { padding: 15px; max-width: 600px; margin: auto; }
+        .container { padding: 15px; max-width: 600px; margin: auto; padding-bottom: 60px; }
         .view { display: none; }
         .view.active { display: block; }
         
         /* Cards */
         .card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; border-left: 8px solid var(--army); overflow: hidden; }
+        .card.offence { border-left-color: var(--law); }
+        .card.power { border-left-color: var(--navy); }
+        .card.samdf { border-left-color: var(--samdf); }
+
         .card-header { background: #f8f9fa; padding: 12px; font-weight: bold; border-bottom: 1px solid #eee; color: var(--navy); }
         .card-body { padding: 15px; font-size: 14px; line-height: 1.4; }
         
-        .search-box, .select-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        .nt-box { background: #fff4ed; padding: 10px; border-radius: 6px; border: 1px solid var(--nt); margin-top: 10px; }
-        .weapon-img { width: 100%; border-radius: 4px; margin-top: 10px; }
-        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; padding: 8px; border-radius: 4px; height: 60px; }
+        .search-box, .select-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; background: white; }
+        .nt-box { background: #fff4ed; padding: 12px; border-radius: 6px; border: 1px solid var(--nt); margin-top: 10px; line-height: 1.5; }
+        
+        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; padding: 8px; border-radius: 4px; height: 60px; box-sizing: border-box; }
         .legal { color: #666; font-size: 12px; font-style: italic; display: block; margin-top: 8px; border-top: 1px solid #eee; padding-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="header-nav">
-    <button class="tab active" onclick="showView(this, 'v-ref')">DFDA</button>
-    <button class="tab" onclick="showView(this, 'v-nt')">NT Police</button>
-    <button class="tab" onclick="showView(this, 'v-samdf')">SAMDF</button>
-    <button class="tab" onclick="showView(this, 'v-wep')">Weapons</button>
-    <button class="tab" onclick="showView(this, 'v-log')">Logs</button>
+    <div class="tab active" onclick="showTab(this, 'v-dfda')">DFDA</div>
+    <div class="tab" onclick="showTab(this, 'v-nt')">NT Police</div>
+    <div class="tab" onclick="showTab(this, 'v-samdf')">SAMDF</div>
+    <div class="tab" onclick="showTab(this, 'v-log')">Logs</div>
 </div>
 
 <div class="container">
-    <div id="v-ref" class="view active">
-        <input type="text" class="search-box" oninput="doSearch(this.value)" placeholder="Search (s89, s31, theft)...">
+    <div id="v-dfda" class="view active">
+        <input type="text" class="search-box" oninput="doSearch(this.value)" placeholder="Search Section (e.g. s89, s47C, s31)...">
         <div id="dfda-list"></div>
     </div>
 
     <div id="v-nt" class="view">
         <div class="card" style="border-left-color: var(--nt)">
-            <div class="card-header">NT Police Equivalents</div>
+            <div class="card-header">NT Police Comparison</div>
             <div class="card-body">
-                <select class="select-input" onchange="document.getElementById('nt-out').innerHTML = ntData[this.value] || ''">
-                    <option value="">-- Select --</option>
+                <select class="select-input" onchange="updateNT(this.value)">
+                    <option value="">-- Choose Incident --</option>
+                    <option value="dui">DUI / Drink Driving</option>
+                    <option value="assault">Common Assault (s188)</option>
+                    <option value="theft">Theft / Stealing (s210)</option>
+                </select>
+                <div id="nt-out"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="v-samdf" class="view">
+        <div class="card samdf">
+            <div class="card-header">SAMDF Authorised Powers</div>
+            <div class="card-body">
+                <select class="select-input" onchange="updateSAM(this.value)">
+                    <option value="">-- Select SAMDF Power --</option>
+                    <option value="id">s72P: Request ID</option>
+                    <option value="search_v">s72L: Vehicle Search</option>
+                    <option
