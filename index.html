@@ -84,4 +84,64 @@
 
 <script>
     const dfdaData = [
-        { s: "s31", title
+        { s: "s31", title: "Obstructing Service Police", cat: "offence", desc: "A person who hinders or resists a service police member in the execution of duty is guilty of an offence." },
+        { s: "s33", title: "Assaulting a Superior", cat: "offence", desc: "Assaulting or threatening a superior officer. Includes physical force or gestures." },
+        { s: "s40", title: "Driving under Influence", cat: "offence", desc: "Driving a service vehicle while impaired by alcohol or a drug." },
+        { s: "s47C", title: "Theft", cat: "offence", desc: "Dishonestly appropriating property belonging to another with intention of permanent deprivation." },
+        { s: "s60", title: "Prejudicial Conduct", cat: "offence", desc: "Conduct likely to prejudice discipline or discredit the ADF." },
+        { s: "s87", title: "Arrest Without Warrant", cat: "power", desc: "Legal authority for service police to arrest on reasonable belief of a service offence." },
+        { s: "s101", title: "Search and Seizure", cat: "power", desc: "Legal authority to search person and premises incidental to arrest." }
+    ];
+
+    function nav(id) {
+        ['v-ref', 'v-nt', 'v-log'].forEach(v => document.getElementById(v).classList.add('hidden'));
+        document.getElementById('v-' + id).classList.remove('hidden');
+        ['t-ref', 't-nt', 't-log'].forEach(t => document.getElementById(t).classList.remove('active'));
+        document.getElementById('t-' + id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function runSearch() {
+        const q = document.getElementById('searchInp').value.toLowerCase().trim();
+        const out = document.getElementById('searchRes');
+        out.innerHTML = '';
+        dfdaData.filter(i => i.s.toLowerCase().includes(q) || i.title.toLowerCase().includes(q))
+            .forEach(i => {
+                const noteVal = localStorage.getItem('n-'+i.s) || '';
+                out.innerHTML += `
+                    <div class="card ${i.cat}">
+                        <div class="card-header"><span>${i.s}</span> <span class="badge bg-${i.cat}">${i.cat}</span></div>
+                        <div class="card-body">
+                            <strong>${i.title}</strong><br>${i.desc}
+                            <textarea placeholder="Field notes..." oninput="localStorage.setItem('n-${i.s}', this.value)">${noteVal}</textarea>
+                        </div>
+                    </div>`;
+            });
+    }
+
+    function runNT() {
+        const val = document.getElementById('ntSel').value;
+        const out = document.getElementById('ntRes');
+        const ntMap = {
+            dui: "<b>NT Traffic Act s25:</b> High Range (>0.15) Penalty = 20 Units (~$3,620) or 12m jail.<br><br><b>Service Equivalent:</b> DFDA s40.",
+            assault: "<b>NT Criminal Code s188:</b> Common Assault = 2 years jail.<br><br><b>Service Equivalent:</b> DFDA s33 or s61.",
+            theft: "<b>NT Criminal Code s210:</b> Stealing = 7 years jail. <br><br><b>Service Equivalent:</b> DFDA s47C (Theft)."
+        };
+        out.innerHTML = val ? `<div class="nt-box">${ntMap[val]}<br><br><small><i>NT Penalty Unit (2025/26) = $181.</i></small></div>` : "";
+    }
+
+    function runLog() {
+        const val = document.getElementById('logSel').value;
+        const out = document.getElementById('logRes');
+        const logs = {
+            drunk: "DTG: [Time] LOC: [Location]\nNARRATIVE: Observed subject staggering. Breath smelled of liquor.",
+            theft_log: "DTG: [Time] LOC: [Location]\nINCIDENT: s47C Theft\nNARRATIVE: Observed subject conceal [Item] belonging to [Entity/Person].",
+            search: "DTG: [Time] LOC: [Location]\nAUTHORITY: s101 DFDA. Located [Item] in right pocket."
+        };
+        out.innerHTML = val ? `<div class="log-box">${logs[val]}</div>` : "";
+    }
+
+    window.onload = runSearch;
+</script>
+</body>
+</html>
