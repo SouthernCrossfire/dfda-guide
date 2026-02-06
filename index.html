@@ -17,6 +17,11 @@
         .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; display: block; }
         
         .card { background: white; margin-bottom: 15px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
+        /* Special coloring for offences */
+        .card.offence { border-left-color: var(--law); }
+        /* Special coloring for powers */
+        .card.power { border-left-color: var(--navy); }
+
         .card-header { padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold; color: var(--navy); display: flex; justify-content: space-between; }
         .card-body { padding: 15px; font-size: 15px; line-height: 1.5; color: #333; }
         
@@ -25,7 +30,9 @@
         
         textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; font-size: 14px; }
         .hidden { display: none !important; }
-        .badge { background: var(--navy); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; }
+        .badge { background: #666; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
+        .badge.bg-offence { background: var(--law); }
+        .badge.bg-power { background: var(--navy); }
     </style>
 </head>
 <body>
@@ -40,7 +47,7 @@
 
 <div class="container">
     <div id="v-ref">
-        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (e.g. s47C, s60)...">
+        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (e.g. s31, s47C, s60)...">
         <div id="searchRes"></div>
     </div>
 
@@ -77,63 +84,4 @@
 
 <script>
     const dfdaData = [
-        { s: "s31", title: "Obstructing Service Police", cat: "Power", desc: "Offence of hindering, resisting or refusing to assist service police." },
-        { s: "s40", title: "Driving under Influence", cat: "Offence", desc: "Driving a service vehicle while impaired by alcohol or a drug." },
-        { s: "s47C", title: "Theft", cat: "Offence", desc: "A person is guilty of theft if they dishonestly appropriate property belonging to another with the intention of permanently depriving the other of it." },
-        { s: "s60", title: "Prejudicial Conduct", cat: "Offence", desc: "General offence for conduct likely to prejudice discipline or discredit the ADF." },
-        { s: "s87", title: "Arrest Without Warrant", cat: "Power", desc: "Authority for service police to arrest on reasonable belief." },
-        { s: "s101", title: "Search and Seizure", cat: "Power", desc: "Authority to search person and premises incidental to arrest." }
-    ];
-
-    function nav(id) {
-        ['v-ref', 'v-nt', 'v-log'].forEach(v => document.getElementById(v).classList.add('hidden'));
-        document.getElementById('v-' + id).classList.remove('hidden');
-        ['t-ref', 't-nt', 't-log'].forEach(t => document.getElementById(t).classList.remove('active'));
-        document.getElementById('t-' + id).classList.add('active');
-        window.scrollTo(0,0);
-    }
-
-    function runSearch() {
-        const q = document.getElementById('searchInp').value.toLowerCase().trim();
-        const out = document.getElementById('searchRes');
-        out.innerHTML = '';
-        dfdaData.filter(i => i.s.toLowerCase().includes(q) || i.title.toLowerCase().includes(q))
-            .forEach(i => {
-                const noteVal = localStorage.getItem('n-'+i.s) || '';
-                out.innerHTML += `
-                    <div class="card">
-                        <div class="card-header"><span>${i.s}</span> <span class="badge">${i.cat}</span></div>
-                        <div class="card-body">
-                            <strong>${i.title}</strong><br>${i.desc}
-                            <textarea placeholder="Private notes..." oninput="localStorage.setItem('n-${i.s}', this.value)">${noteVal}</textarea>
-                        </div>
-                    </div>`;
-            });
-    }
-
-    function runNT() {
-        const val = document.getElementById('ntSel').value;
-        const out = document.getElementById('ntRes');
-        const ntMap = {
-            dui: "<b>NT Traffic Act s25:</b> High Range (>0.15) Penalty = 20 Units (~$3,620) or 12m jail.<br><br><b>Service Equivalent:</b> DFDA s40.",
-            assault: "<b>NT Criminal Code s188:</b> Common Assault = 2 years jail.<br><br><b>Service Equivalent:</b> DFDA s33 or s61.",
-            theft: "<b>NT Criminal Code s210:</b> Stealing = 7 years jail. <br><br><b>Service Equivalent:</b> DFDA s47C (Theft)."
-        };
-        out.innerHTML = val ? `<div class="nt-box">${ntMap[val]}<br><br><small><i>NT Penalty Unit (2025/26) = $181.</i></small></div>` : "";
-    }
-
-    function runLog() {
-        const val = document.getElementById('logSel').value;
-        const out = document.getElementById('logRes');
-        const logs = {
-            drunk: "DTG: [Time] LOC: [Location]\nNARRATIVE: Observed subject staggering. Breath smelled of liquor.",
-            theft_log: "DTG: [Time] LOC: [Location]\nINCIDENT: s47C Theft\nNARRATIVE: Observed subject conceal [Item] belonging to [Entity/Person]. Subject exited area without declaring item.",
-            search: "DTG: [Time] LOC: [Location]\nAUTHORITY: s101 DFDA. Located [Item] in right pocket."
-        };
-        out.innerHTML = val ? `<div class="log-box">${logs[val]}</div>` : "";
-    }
-
-    window.onload = runSearch;
-</script>
-</body>
-</html>
+        { s: "s31", title
