@@ -1,83 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFDA Field Guide</title>
-    <style>
-        :root { --army-green: #2e3b23; --navy-blue: #1a3a5f; --raaf-blue: #5d97c1; }
-        body { font-family: -apple-system, sans-serif; background: #eceff1; margin: 0; padding: 15px; }
-        .container { max-width: 600px; margin: auto; }
-        header { background: var(--navy-blue); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
-        input { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 25px; border: 1px solid #ccc; box-sizing: border-box; font-size: 16px; }
-        .card { background: white; padding: 15px; margin-bottom: 15px; border-radius: 10px; border-left: 6px solid var(--army-green); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .s-num { font-weight: bold; color: #d32f2f; font-size: 1.1em; }
-        .cat { font-size: 0.7em; background: #ddd; padding: 2px 8px; border-radius: 10px; float: right; }
-        textarea { width: 100%; margin-top: 10px; border: 1px dashed #ccc; border-radius: 5px; padding: 8px; box-sizing: border-box; font-size: 0.85em; background: #fffde7; }
-        .footer { text-align: center; font-size: 0.8em; color: #666; margin-top: 20px; }
-    </style>
-</head>
-<body>
+<div class="card" style="border-left-color: #ffd700;">
+    <div class="card-header"><strong>Punishment Calculator</strong></div>
+    <div class="card-body">
+        <label>Member's Rank:</label>
+        <select id="rankSelect" onchange="calculate()" style="width:100%; padding:10px; margin: 10px 0;">
+            <option value="officer">Officer (LT - MAJ equivalent)</option>
+            <option value="snco">Senior NCO (SGT - WO equivalent)</option>
+            <option value="jr">Junior Rank (PTE - CPL equivalent)</option>
+        </select>
 
-<div class="container">
-    <header>
-        <h2 style="margin:0">DFDA 1982 Reference</h2>
-        <small>Offences, Powers & Discipline</small>
-    </header>
-
-    <input type="text" id="searchInput" onkeyup="render()" placeholder="Search Section, Offence or Power...">
-    
-    <div id="results"></div>
-
-    <div class="footer">Confidentiality Note: Notes are stored locally on this device.</div>
+        <div id="calcResult" style="background: #fdfdfd; padding: 10px; border: 1px solid #ddd; font-size: 0.9em;">
+            Select a rank to see CO's max powers.
+        </div>
+    </div>
 </div>
 
 <script>
-    const dfdaData = [
-        // OFFENCES
-        { s: "s25", cat: "Offence", title: "Desertion", desc: "Absenting oneself with the intention of not returning to the ADF." },
-        { s: "s33", cat: "Offence", title: "Assaulting a Superior", desc: "Physical assault or threatening behavior toward a superior officer." },
-        { s: "s56", cat: "Offence", title: "Losing Service Property", desc: "Losing, damaging, or destroying service property through neglect." },
-        { s: "s60", cat: "Offence", title: "Prejudicial Conduct", desc: "The 'General Offence'. Conduct to the prejudice of good order and discipline." },
-        { s: "s61", cat: "Offence", title: "Territory Offences", desc: "Crimes under ACT law (theft, serious assault) applicable to service members." },
-        
-        // POWERS / POLICE
-        { s: "s87", cat: "Power", title: "Arrest without Warrant", desc: "Authority for service police and certain members to arrest based on reasonable belief." },
-        { s: "s101", cat: "Power", title: "Search of Person", desc: "Power to search a person under arrest or in specific service environments." },
-        { s: "s101AA", cat: "Power", title: "Entry and Search", desc: "Power to enter service premises and search for evidence." },
-        
-        // SUMMARY AUTHORITIES
-        { s: "s106", cat: "Legal", title: "Summary Authority", desc: "Definitions of Superior and Subordinate Summary Authorities." },
-        { s: "s130", cat: "Legal", title: "Right to Elect Court Martial", desc: "The right of an accused to choose a higher tribunal over a summary hearing." }
-    ];
+function calculate() {
+    const rank = document.getElementById('rankSelect').value;
+    const res = document.getElementById('calcResult');
+    let html = "";
 
-    function saveNote(section, note) {
-        localStorage.setItem('note-' + section, note);
+    if (rank === "officer") {
+        html = "<strong>Max CO Punishments (Officer):</strong><ul>" +
+               "<li>Fine: Max 14 days pay</li>" +
+               "<li>Reprimand / Severe Reprimand</li>" +
+               "<li><span style='color:red'>Note:</span> CO cannot award detention or reduction in rank.</li></ul>";
+    } else if (rank === "snco") {
+        html = "<strong>Max CO Punishments (SNCO):</strong><ul>" +
+               "<li>Fine: Max 28 days pay</li>" +
+               "<li>Reduction in Rank (one grade)</li>" +
+               "<li>Reprimand</li>" +
+               "<li><span style='color:red'>Note:</span> Detention usually requires higher authority approval.</li></ul>";
+    } else {
+        html = "<strong>Max CO Punishments (Junior Ranks):</strong><ul>" +
+               "<li>Detention: Max 28 days</li>" +
+               "<li>Fine: Max 28 days pay</li>" +
+               "<li>Reduction in Rank</li>" +
+               "<li>Extra Duties (up to 7 days)</li></ul>";
     }
-
-    function render() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        const resultsDiv = document.getElementById('results');
-        resultsDiv.innerHTML = '';
-
-        dfdaData.filter(item => 
-            item.title.toLowerCase().includes(query) || 
-            item.s.toLowerCase().includes(query) || 
-            item.desc.toLowerCase().includes(query)
-        ).forEach(item => {
-            const savedNote = localStorage.getItem('note-' + item.s) || '';
-            resultsDiv.innerHTML += `
-                <div class="card">
-                    <span class="cat">${item.cat}</span>
-                    <div style="margin-bottom:8px;"><span class="s-num">${item.s}</span> - <strong>${item.title}</strong></div>
-                    <div style="font-size:0.9em; line-height:1.4;">${item.desc}</div>
-                    <textarea placeholder="Add your notes/case logs here..." oninput="saveNote('${item.s}', this.value)">${savedNote}</textarea>
-                </div>
-            `;
-        });
-    }
-
-    render();
+    res.innerHTML = html;
+}
 </script>
-</body>
-</html>
