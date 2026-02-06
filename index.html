@@ -3,125 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DFDA Field Pro - NT Edition</title>
+    <title>DFDA Field Pro - NT</title>
     <style>
-        :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --gold: #c5a059; --nt-ochre: #d5763e; }
+        :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; }
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
         
+        /* Navigation */
         .tab-bar { display: flex; background: var(--navy); position: sticky; top: 0; z-index: 100; }
-        .tab { flex: 1; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; font-size: 0.75em; }
-        .tab.active { border-bottom: 4px solid var(--nt-ochre); background: rgba(255,255,255,0.1); }
+        .tab { flex: 1; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; font-size: 0.75em; border-bottom: 4px solid transparent; }
+        .tab.active { border-bottom: 4px solid var(--nt); background: rgba(255,255,255,0.1); }
 
         .container { max-width: 700px; margin: auto; padding: 15px; }
         .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
         
+        /* Content Cards */
         .card { background: white; margin-bottom: 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
         .card-header { padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold; }
         .card-body { padding: 15px; font-size: 0.95em; line-height: 1.4; }
         
-        .log-box { background: #1a1a1a; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 0.85em; margin-top: 10px; border: 1px solid #333; color: #00ff00; line-height: 1.6; white-space: pre-wrap; }
-        .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt-ochre); margin-top: 10px; }
+        .log-box { background: #1a1a1a; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 0.85em; color: #00ff00; line-height: 1.6; white-space: pre-wrap; }
+        .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt); margin-top: 10px; }
         
         textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px; padding: 8px; background: #fffdf0; box-sizing: border-box; }
         .hidden { display: none !important; }
-        .badge { font-size: 0.7em; padding: 3px 8px; border-radius: 12px; color: white; text-transform: uppercase; float: right; }
-        .bg-nt { background: var(--nt-ochre); }
     </style>
 </head>
 <body>
 
 <div class="tab-bar">
-    <div class="tab active" id="btn-guide" onclick="switchView('guide')">REF</div>
-    <div class="tab" id="btn-calc" onclick="switchView('calc')">NT COMPARISON</div>
-    <div class="tab" id="btn-log" onclick="switchView('log')">OCCURRENCE LOG</div>
+    <div id="t-ref" class="tab active" onclick="nav('ref')">REF</div>
+    <div id="t-nt" class="tab" onclick="nav('nt')">NT POLICE</div>
+    <div id="t-log" class="tab" onclick="nav('log')">LOGS</div>
 </div>
 
 <div class="container">
-    <div id="view-guide">
-        <input type="text" class="search-box" id="search" oninput="doSearch()" placeholder="Search DFDA Sections...">
-        <div id="results"></div>
+    <div id="v-ref">
+        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search DFDA (e.g. s60, arrest)...">
+        <div id="searchRes"></div>
     </div>
 
-    <div id="view-calc" class="hidden">
-        <div class="card" style="border-left-color: var(--nt-ochre)">
+    <div id="v-nt" class="hidden">
+        <div class="card" style="border-left-color: var(--nt)">
             <div class="card-header">NT Police (Civilian) Equivalent</div>
             <div class="card-body">
-                <p>Select a service incident to see the NT Police charge equivalent:</p>
-                <select id="ntSelect" class="select-input" onchange="doNTCalc()">
-                    <option value="">-- Choose Incident --</option>
+                <select id="ntSel" class="select-input" onchange="runNT()">
+                    <option value="">-- Select Incident --</option>
                     <option value="dui">DUI / Drink Driving</option>
                     <option value="assault">Common Assault</option>
                     <option value="stealing">Theft / Stealing</option>
-                    <option value="disorderly">Disorderly Behaviour</option>
                 </select>
-                <div id="ntOutput"></div>
+                <div id="ntRes"></div>
             </div>
         </div>
     </div>
 
-    <div id="view-log" class="hidden">
+    <div id="v-log" class="hidden">
         <div class="card" style="border-left-color: var(--navy)">
-            <div class="card-header">Log Entry Templates</div>
+            <div class="card-header">Police Log Templates</div>
             <div class="card-body">
-                <select id="logSelect" class="select-input" onchange="doLogDraft()">
-                    <option value="">-- Choose Incident Type --</option>
-                    <option value="s60_drunk">s60 - Intoxication/Conduct</option>
-                    <option value="s31_obstruct">s31 - Obstruction</option>
-                    <option value="s101_search">s101 - Search Entry</option>
+                <select id="logSel" class="select-input" onchange="runLog()">
+                    <option value="">-- Choose Incident --</option>
+                    <option value="drunk">s60 - Intoxication</option>
+                    <option value="obstruct">s31 - Obstruction</option>
+                    <option value="search">s101 - Search Entry</option>
                 </select>
-                <div id="logOutput"></div>
+                <div id="logRes"></div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const dfdaData = [
-        { s: "s31", cat: "power", title: "Obstructing Service Police", desc: "Hindering/resisting service police." },
-        { s: "s60", cat: "offence", title: "Prejudicial Conduct", desc: "Conduct likely to prejudice discipline." },
-        { s: "s61", cat: "offence", title: "Territory Offences", desc: "Allows DFDA to prosecute offences against NT/ACT law." },
-        { s: "s87", cat: "power", title: "Arrest without Warrant", desc: "Power to arrest on reasonable belief." }
-    ];
-
-    function switchView(target) {
-        ['view-guide', 'view-calc', 'view-log'].forEach(id => document.getElementById(id).classList.add('hidden'));
-        ['btn-guide', 'btn-calc', 'btn-log'].forEach(id => document.getElementById(id).classList.remove('active'));
-        document.getElementById('view-' + target).classList.remove('hidden');
-        document.getElementById('btn-' + target).classList.add('active');
-    }
-
-    function doSearch() {
-        const q = document.getElementById('search').value.toLowerCase();
-        const res = document.getElementById('results');
-        res.innerHTML = '';
-        dfdaData.filter(i => i.title.toLowerCase().includes(q) || i.s.toLowerCase().includes(q)).forEach(i => {
-            res.innerHTML += `<div class="card"><div class="card-header">${i.s}</div><div class="card-body"><strong>${i.title}</strong><p>${i.desc}</p></div></div>`;
-        });
-    }
-
-    function doNTCalc() {
-        const val = document.getElementById('ntSelect').value;
-        const out = document.getElementById('ntOutput');
-        const ntData = {
-            dui: "<b>NT Charge:</b> Driving under the influence (NT Traffic Act s25)<br><b>Penalty:</b> High Range (>0.15): 20 Penalty Units or 12 months imprisonment.<br><b>Service Equivalent:</b> DFDA s40.",
-            assault: "<b>NT Charge:</b> Common Assault (NT Criminal Code s188)<br><b>Penalty:</b> Up to 2 years imprisonment (or 5 years if aggravated).<br><b>Service Equivalent:</b> DFDA s33 or s61.",
-            stealing: "<b>NT Charge:</b> Stealing (NT Criminal Code s210)<br><b>Penalty:</b> Up to 7 years imprisonment.<br><b>Service Equivalent:</b> DFDA s55 or s61.",
-            disorderly: "<b>NT Charge:</b> Disorderly Behaviour in Public (NT Summary Offences Act s47)<br><b>Penalty:</b> $2,000 fine or 6 months imprisonment.<br><b>Service Equivalent:</b> DFDA s60."
-        };
-        out.innerHTML = val ? `<div class="nt-box">${ntData[val]}<br><br><small><i>*Note: 1 NT Penalty Unit ≈ $176 (as of 2024/25).</i></small></div>` : "";
-    }
-
-    function doLogDraft() {
-        const val = document.getElementById('logSelect').value;
-        const out = document.getElementById('logOutput');
-        const logs = {
-            s60_drunk: "DTG: [Time] LOC: [Location]\nNARRATIVE: Observed subject staggering. Speech slurred. Breath smelled of alcohol.",
-            s31_obstruct: "DTG: [Time] LOC: [Location]\nNARRATIVE: Subject obstructed police during search. Subject ignored 3 commands to step back.",
-            s101_search: "DTG: [Time] LOC: [Location]\nAUTHORITY: s101 DFDA. Found in pocket: [Item]."
-        };
-        out.innerHTML = val ? `<div class="log-box">${logs[val]}</div>` : "";
-    }
-    doSearch();
-</script>
-</body>
-</html>
+    const data = [
+        { s: "s31", title: "Obstructing Service Police",
