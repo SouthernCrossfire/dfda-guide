@@ -8,14 +8,15 @@
         :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --samdf: #2c3e50; --weapon: #333; }
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
-        /* Robust Tab Bar */
+        /* Fixed Header */
         .header-nav { position: sticky; top: 0; z-index: 999; background: var(--navy); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .tab-bar { display: flex; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-        .tab { flex: 0 0 auto; padding: 15px 20px; text-align: center; color: #fff; cursor: pointer; font-weight: bold; font-size: 11px; transition: 0.2s; border-bottom: 4px solid transparent; text-transform: uppercase; }
+        .tab-bar { display: flex; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .tab-bar::-webkit-scrollbar { display: none; }
+        .tab { flex: 0 0 auto; padding: 15px 18px; text-align: center; color: #fff; cursor: pointer; font-weight: bold; font-size: 11px; border-bottom: 4px solid transparent; text-transform: uppercase; }
         .tab.active { border-bottom: 4px solid var(--nt); background: rgba(255,255,255,0.1); }
 
         .container { max-width: 700px; margin: auto; padding: 15px; padding-bottom: 50px; }
-        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; display: block; }
+        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; display: block; background: white; }
         
         .card { background: white; margin-bottom: 15px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
         .card.offence { border-left-color: var(--law); }
@@ -23,17 +24,16 @@
         .card.samdf { border-left-color: var(--samdf); }
         .card.weapon { border-left-color: var(--weapon); }
 
-        .card-header { padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold; color: var(--navy); display: flex; justify-content: space-between; }
+        .card-header { padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold; color: var(--navy); font-size: 14px; }
         .card-body { padding: 15px; font-size: 14px; line-height: 1.5; color: #333; }
         
-        .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt); margin-top: 10px; line-height: 1.6; font-size: 13px; }
-        .weapon-img { width: 100%; height: auto; border-radius: 5px; margin-top: 10px; border: 1px solid #ddd; display: block; }
+        .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt); margin-top: 5px; line-height: 1.6; }
+        .weapon-img { width: 100%; height: auto; border-radius: 5px; margin-top: 10px; border: 1px solid #ddd; }
+        .log-box { background: #1a1a1a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #00ff00; white-space: pre-wrap; margin-top: 5px; }
         
-        .log-box { background: #1a1a1a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #00ff00; line-height: 1.6; white-space: pre-wrap; border: 1px solid #333; }
-        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; font-size: 14px; }
+        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; }
         .hidden { display: none !important; }
-        .badge { background: #666; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
-        .legal-detail { color: #555; font-style: italic; margin-top: 5px; display: block; border-top: 1px solid #eee; padding-top: 5px; font-size: 12px; }
+        .legal-detail { color: #555; font-style: italic; margin-top: 8px; display: block; border-top: 1px solid #eee; padding-top: 8px; font-size: 12.5px; }
     </style>
 </head>
 <body>
@@ -49,63 +49,62 @@
 </div>
 
 <div class="container">
-    <div id="v-ref" class="content-view">
+    <div id="v-ref" class="view">
         <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (e.g. s89, s31)...">
         <div id="searchRes"></div>
     </div>
 
-    <div id="v-nt" class="content-view hidden">
+    <div id="v-nt" class="view hidden">
         <div class="card" style="border-left-color: var(--nt)">
-            <div class="card-header">NT Police Comparison</div>
+            <div class="card-header">NT Police Civilian Equivalent</div>
             <div class="card-body">
-                <select id="ntSel" class="select-input" onchange="runNT()">
+                <select id="ntSel" class="select-input" onchange="updateNT()">
                     <option value="">-- Choose Incident --</option>
                     <option value="dui">DUI / Drink Driving</option>
-                    <option value="assault">Common Assault (NT Code s188)</option>
-                    <option value="theft">Theft / Stealing (NT Code s210)</option>
+                    <option value="assault">Common Assault (s188)</option>
+                    <option value="theft">Theft / Stealing (s210)</option>
                 </select>
                 <div id="ntRes"></div>
             </div>
         </div>
     </div>
 
-    <div id="v-samdf" class="content-view hidden">
+    <div id="v-samdf" class="view hidden">
         <div class="card samdf">
             <div class="card-header">SAMDF Authorised Powers</div>
             <div class="card-body">
-                <select id="samSel" class="select-input" onchange="runSAM()">
+                <select id="samSel" class="select-input" onchange="updateSAM()">
                     <option value="">-- Select SAMDF Power --</option>
-                    <option value="id">s72P: Request Identification</option>
-                    <option value="search_v">s72L: Search Vehicles</option>
-                    <option value="search_p">s72M/N: Search Persons</option>
-                    <option value="arrest">s72Q: Arrest & Detain</option>
+                    <option value="id">s72P: Request ID</option>
+                    <option value="search_v">s72L: Vehicle Search</option>
+                    <option value="search_p">s72M: Person Search</option>
+                    <option value="arrest">s72Q: Arrest/Detain</option>
                 </select>
                 <div id="samRes"></div>
             </div>
         </div>
     </div>
 
-    <div id="v-wep" class="content-view hidden">
+    <div id="v-wep" class="view hidden">
         <div class="card weapon">
             <div class="card-header">NT Prohibited Items</div>
             <div class="card-body">
-                <select id="wepSel" class="select-input" onchange="runWep()">
+                <select id="wepSel" class="select-input" onchange="updateWep()">
                     <option value="">-- Select Category --</option>
                     <option value="flick">Flick / Gravity Knives</option>
                     <option value="knuckle">Knuckle Dusters</option>
                     <option value="oc">OC / Pepper Spray</option>
-                    <option value="conducted">TASERS / CEDs</option>
                 </select>
                 <div id="wepRes"></div>
             </div>
         </div>
     </div>
 
-    <div id="v-log" class="content-view hidden">
+    <div id="v-log" class="view hidden">
         <div class="card" style="border-left-color: var(--navy)">
             <div class="card-header">Field Log Templates</div>
             <div class="card-body">
-                <select id="logSel" class="select-input" onchange="runLog()">
+                <select id="logSel" class="select-input" onchange="updateLog()">
                     <option value="">-- Choose Occurrence --</option>
                     <option value="arrest_log">s89(1) - Arrest Entry</option>
                     <option value="theft_log">s47C - Theft Entry</option>
@@ -123,58 +122,4 @@
         { s: "s40", title: "Driving under Influence", cat: "offence", desc: "Driving a service vehicle while impaired by alcohol or drugs.", legal: "Threshold: Incapable of proper control. ADIs admissible." },
         { s: "s47C", title: "Theft", cat: "offence", desc: "Dishonestly appropriating property belonging to another.", legal: "Requires intent to permanently deprive. Mirroring Cth Criminal Code." },
         { s: "s60", title: "Prejudicial Conduct", cat: "offence", desc: "Conduct likely to prejudice discipline or discredit the ADF.", legal: "Threshold: The 'Service Connection' must be articulated." },
-        { s: "s89(1)", title: "Arrest Without Warrant", cat: "power", desc: "Power to arrest on reasonable belief of a service offence.", legal: "Objective 'Reasonable Grounds' test applies. Must caution ASAP." },
-        { s: "s101", title: "Search of Arrested Person", cat: "power", desc: "Search and seizure following s89 arrest.", legal: "For safety or evidence. Conduct with decency." }
-    ];
-
-    function nav(targetId) {
-        // 1. Hide all content views
-        const views = document.getElementsByClassName('content-view');
-        for (let v of views) { v.classList.add('hidden'); }
-        
-        // 2. Remove 'active' class from all tabs
-        const tabs = document.getElementsByClassName('tab');
-        for (let t of tabs) { t.classList.remove('active'); }
-        
-        // 3. Show selected view and activate tab
-        document.getElementById('v-' + targetId).classList.remove('hidden');
-        document.getElementById('t-' + targetId).classList.add('active');
-        window.scrollTo(0,0);
-    }
-
-    function runSearch() {
-        const q = document.getElementById('searchInp').value.toLowerCase().trim();
-        const out = document.getElementById('searchRes');
-        out.innerHTML = '';
-        dfdaData.filter(i => i.s.toLowerCase().includes(q) || i.title.toLowerCase().includes(q))
-            .forEach(i => {
-                const noteVal = localStorage.getItem('n-'+i.s) || '';
-                out.innerHTML += `<div class="card ${i.cat}"><div class="card-header">${i.s}</div><div class="card-body"><strong>${i.title}</strong><br>${i.desc}<span class="legal-detail">${i.legal}</span><textarea placeholder="Field notes..." oninput="localStorage.setItem('n-${i.s}', this.value)">${noteVal}</textarea></div></div>`;
-            });
-    }
-
-    function runNT() {
-        const val = document.getElementById('ntSel').value;
-        const out = document.getElementById('ntRes');
-        const ntMap = {
-            dui: "<b>NT Traffic Act s25:</b> High Range Penalty = 20 Units ($3,620). <br><b>Service:</b> DFDA s40.",
-            assault: "<b>NT Code s188:</b> Common Assault = 2 yrs jail. <br><b>Service:</b> DFDA s33/s61.",
-            theft: "<b>NT Code s210:</b> Stealing = 7 yrs jail. <br><b>Service:</b> DFDA s47C."
-        };
-        out.innerHTML = val ? `<div class="nt-box">${ntMap[val]}</div>` : "";
-    }
-
-    function runSAM() {
-        const val = document.getElementById('samSel').value;
-        const out = document.getElementById('samRes');
-        const samMap = {
-            id: "<b>s72P:</b> Request ID in DPA. Refusal is an offence.",
-            search_v: "<b>s72L:</b> Search vehicles in DPA for prohibited items.",
-            search_p: "<b>s72M/N:</b> Search persons (Consent vs. Safety threat).",
-            arrest: "<b>s72Q:</b> Arrest for 'relevant offences' on Defence premises."
-        };
-        out.innerHTML = val ? `<div class="nt-box" style="border-color:var(--samdf)">${samMap[val]}</div>` : "";
-    }
-
-    function runWep() {
-        const val = document.getElementById('wepSel
+        { s: "s89(1)", title: "Arrest Without Warrant", cat: "power", desc: "Power to arrest on reasonable belief of a service offence.", legal: "Objective '
