@@ -8,14 +8,12 @@
         :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --gold: #c5a059; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
         
-        /* Navigation Tabs */
         .tab-bar { display: flex; background: var(--navy); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .tab { flex: 1; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; font-size: 0.85em; transition: 0.3s; border-bottom: 3px solid transparent; }
         .tab.active { border-bottom: 3px solid var(--gold); background: rgba(255,255,255,0.1); }
 
         .container { max-width: 700px; margin: auto; padding: 15px; }
         .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; outline: none; }
-        .search-box:focus { border-color: var(--navy); }
         
         .card { background: white; margin-bottom: 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
         .card.power { border-left-color: var(--navy); }
@@ -23,13 +21,7 @@
         .card-header { padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .card-body { padding: 15px; font-size: 0.95em; line-height: 1.4; }
         
-        .s-tag { font-weight: bold; color: var(--law); font-size: 1.1em; }
-        .badge { font-size: 0.7em; padding: 3px 8px; border-radius: 12px; color: white; text-transform: uppercase; }
-        .bg-offence { background: var(--army); }
-        .bg-power { background: var(--navy); }
-        .bg-law { background: var(--law); }
-
-        .template-box { background: #f4f4f9; padding: 15px; border-radius: 5px; font-family: 'Courier New', Courier, monospace; font-size: 0.95em; margin-top: 10px; border: 1px solid #ccc; color: #333; line-height: 1.5; }
+        .template-box { background: #1e1e1e; padding: 15px; border-radius: 5px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.85em; margin-top: 10px; border: 1px solid #333; color: #00ff00; line-height: 1.5; overflow-x: auto; }
         textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px; padding: 8px; background: #fffdf0; box-sizing: border-box; font-family: inherit; }
         
         .hidden { display: none !important; }
@@ -39,9 +31,9 @@
 <body>
 
 <div class="tab-bar">
-    <div class="tab active" id="btn-guide" onclick="switchView('guide')">REFERENCE</div>
-    <div class="tab" id="btn-calc" onclick="switchView('calc')">CALCULATOR</div>
-    <div class="tab" id="btn-draft" onclick="switchView('draft')">DRAFTER</div>
+    <div class="tab active" id="btn-guide" onclick="switchView('guide')">REF</div>
+    <div class="tab" id="btn-calc" onclick="switchView('calc')">CALC</div>
+    <div class="tab" id="btn-draft" onclick="switchView('draft')">LOG ENTRIES</div>
 </div>
 
 <div class="container">
@@ -54,7 +46,6 @@
         <div class="card punishment">
             <div class="card-header"><strong>CO Punishment Powers</strong></div>
             <div class="card-body">
-                <p>Select member rank to see max penalties:</p>
                 <select id="rankSelect" class="select-input" onchange="doCalc()">
                     <option value="">-- Select Rank --</option>
                     <option value="officer">Officer (LT - MAJ)</option>
@@ -67,16 +58,16 @@
     </div>
 
     <div id="view-draft" class="hidden">
-        <div class="card">
-            <div class="card-header"><strong>Charge Template</strong></div>
+        <div class="card power">
+            <div class="card-header"><strong>Occurrence Log / Notebook Templates</strong></div>
             <div class="card-body">
-                <p>Select offence for drafting particulars:</p>
+                <p>Select occurrence type for entry format:</p>
                 <select id="draftSelect" class="select-input" onchange="doDraft()">
-                    <option value="">-- Choose Offence --</option>
-                    <option value="s60">s60 - Prejudicial Conduct</option>
-                    <option value="s31">s31 - Obstructing Police</option>
-                    <option value="s33">s33 - Assault Superior</option>
-                    <option value="s24">s24 - AWOL</option>
+                    <option value="">-- Choose Occurrence --</option>
+                    <option value="arrest">Arrest Under s87</option>
+                    <option value="search">Search of Person s101</option>
+                    <option value="s60_log">s60 Prejudicial Conduct Entry</option>
+                    <option value="traffic">DUI / Traffic Incident</option>
                 </select>
                 <div id="draftOutput"></div>
             </div>
@@ -85,7 +76,6 @@
 </div>
 
 <script>
-    // 1. Data Definitions
     const dfdaData = [
         { s: "s24", cat: "offence", title: "AWOL", desc: "Absence from place of duty without authority." },
         { s: "s31", cat: "power", title: "Obstructing Service Police", desc: "Hindering or refusing to assist a service police member in execution of duty." },
@@ -95,69 +85,50 @@
         { s: "s101", cat: "power", title: "Search and Seizure", desc: "Power to search arrested persons and seize evidence." }
     ];
 
-    // 2. Tab Switching Logic
     function switchView(target) {
-        // Hide all views
         document.getElementById('view-guide').classList.add('hidden');
         document.getElementById('view-calc').classList.add('hidden');
         document.getElementById('view-draft').classList.add('hidden');
-        
-        // Deactivate all tabs
         document.getElementById('btn-guide').classList.remove('active');
         document.getElementById('btn-calc').classList.remove('active');
         document.getElementById('btn-draft').classList.remove('active');
-
-        // Show target view & activate target tab
         document.getElementById('view-' + target).classList.remove('hidden');
         document.getElementById('btn-' + target).classList.add('active');
     }
 
-    // 3. Search Logic
     function doSearch() {
         const q = document.getElementById('search').value.toLowerCase();
         const res = document.getElementById('results');
         res.innerHTML = '';
-
         dfdaData.filter(i => i.title.toLowerCase().includes(q) || i.s.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q))
         .forEach(i => {
             const note = localStorage.getItem('note-' + i.s) || '';
-            res.innerHTML += `
-                <div class="card ${i.cat}">
-                    <div class="card-header"><span class="s-tag">${i.s}</span><span class="badge bg-${i.cat}">${i.cat}</span></div>
-                    <div class="card-body"><strong>${i.title}</strong><p>${i.desc}</p>
-                    <textarea placeholder="Field notes..." oninput="localStorage.setItem('note-${i.s}', this.value)">${note}</textarea></div>
-                </div>`;
+            res.innerHTML += `<div class="card ${i.cat}"><div class="card-header"><strong>${i.s}</strong></div><div class="card-body"><strong>${i.title}</strong><p>${i.desc}</p><textarea placeholder="Field notes..." oninput="localStorage.setItem('note-${i.s}', this.value)">${note}</textarea></div></div>`;
         });
     }
 
-    // 4. Calculator Logic
     function doCalc() {
         const val = document.getElementById('rankSelect').value;
         const out = document.getElementById('calcOutput');
-        if(!val) { out.innerHTML = "Please select a rank..."; return; }
-        
         const maps = {
-            officer: "<b>Max CO Powers (Officer):</b><br>• Fine: 14 days pay<br>• Reprimand / Severe Reprimand",
-            snco: "<b>Max CO Powers (SNCO):</b><br>• Fine: 28 days pay<br>• Reduction in Rank (1 grade)<br>• Reprimand",
-            jr: "<b>Max CO Powers (Junior Rank):</b><br>• Detention: 28 days<br>• Fine: 28 days pay<br>• Reduction in Rank<br>• Extra Duties (7 days)"
+            officer: "<b>Officer:</b> 14 days fine, Reprimand.",
+            snco: "<b>SNCO:</b> 28 days fine, 1 grade reduction, Reprimand.",
+            jr: "<b>JR:</b> 28 days detention, 28 days fine, Reduction, 7 days extra duties."
         };
-        out.innerHTML = maps[val];
+        out.innerHTML = maps[val] || "Select rank...";
     }
 
-    // 5. Drafter Logic
     function doDraft() {
         const val = document.getElementById('draftSelect').value;
         const out = document.getElementById('draftOutput');
         const drafts = {
-            s60: "That you [Rank, Name], being a defence member, did at [Place] on or about [Date] behave in a manner likely to prejudice the discipline of the Defence Force, in that you [Specific Action].",
-            s31: "That you [Rank, Name], being a defence member, did at [Place] on or about [Date] obstruct [Rank/Name of Police Member], a service police member, in the execution of their duty.",
-            s33: "That you [Rank, Name], being a defence member, did at [Place] on or about [Date] assault [Rank/Name], a superior officer.",
-            s24: "That you [Rank, Name], being a defence member, did at [Place] between [Start Date] and [End Date] absent yourself from your place of duty without authority."
+            arrest: "TIME: [HHMM] DATE: [DDMMYY]\nLOCATION: [Building/Area]\nPERSON: [Rank, Name, PMKeyS]\nNARRATIVE: I, [My Rank/Name], formed the reasonable belief that the subject had committed an offence under [sXX]. At [Time], I informed the subject they were under arrest. I cautioned the subject as per DFDA s101S. Subject stated: '[Response]'.",
+            search: "TIME: [HHMM] LOCATION: [Detailed Location]\nAUTHORITY: Search incidental to arrest under s101.\nOBSERVATIONS: Subject was asked to turn out pockets. I located [Item Description] in the [Left/Right Pocket]. Item seized at [Time] and secured in [Evidence Bag #].",
+            s60_log: "OCCURRENCE: Conduct Prejudicial to Good Order/Discipline.\nOBSERVATIONS: While on patrol at [Location], I observed the subject [Describe Action - e.g. shouting profanities at duty staff]. Subject's breath smelled of alcohol. Subject's uniform was [Dishevelled/Incorrect]. Action taken: Subject directed to return to lines / Subject escorted to [Duty Office].",
+            traffic: "VEHICLE: [Type/Rego]\nINCIDENT: Observed vehicle [Describe Driving - e.g. swerving]. Intercepted at [Location]. Subject breath test (PBT) result: [0.0XX]. Subject's speech was [Slurred/Clear]. Eyes were [Bloodshot/Normal]."
         };
         out.innerHTML = val ? `<div class="template-box">${drafts[val]}</div>` : "";
     }
-
-    // Initialize
     doSearch();
 </script>
 </body>
