@@ -7,26 +7,21 @@
     <style>
         :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --gold: #c5a059; }
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
-        
         .tab-bar { display: flex; background: var(--navy); position: sticky; top: 0; z-index: 100; }
         .tab { flex: 1; padding: 15px; text-align: center; color: white; cursor: pointer; font-weight: bold; font-size: 0.8em; }
         .tab.active { background: var(--gold); color: var(--navy); }
-
         .container { max-width: 700px; margin: auto; padding: 15px; }
         .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
-        
         .card { background: white; margin-bottom: 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
         .card.power { border-left-color: var(--navy); }
         .card.punishment { border-left-color: var(--law); }
         .card-header { padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .card-body { padding: 15px; font-size: 0.95em; line-height: 1.4; }
-        
         .s-tag { font-weight: bold; color: var(--law); }
         .badge { font-size: 0.7em; padding: 3px 8px; border-radius: 12px; color: white; text-transform: uppercase; }
         .bg-offence { background: var(--army); }
         .bg-power { background: var(--navy); }
         .bg-law { background: var(--law); }
-
         .template-box { background: #eef; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 0.9em; margin-top: 10px; border: 1px solid #ccc; white-space: pre-wrap; }
         textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px; padding: 8px; background: #fffdf0; box-sizing: border-box; }
         .hidden { display: none; }
@@ -42,13 +37,13 @@
 
 <div class="container">
     <div id="view-guide">
-        <input type="text" class="search-box" id="search" onkeyup="render()" placeholder="Search Section or Power...">
+        <input type="text" class="search-box" id="search" oninput="render()" placeholder="Search (e.g. 's60', 'police', 'arrest')...">
         <div id="results"></div>
     </div>
 
     <div id="view-calc" class="hidden">
         <div class="card punishment">
-            <div class="card-header"><strong>Summary Authority Powers</strong></div>
+            <div class="card-header"><strong>Summary Authority Calculator</strong></div>
             <div class="card-body">
                 <select id="rankSelect" class="select-input" onchange="runCalc()">
                     <option value="">-- Select Rank of Accused --</option>
@@ -65,7 +60,96 @@
         <div class="card">
             <div class="card-header"><strong>Charge Particulars Drafter</strong></div>
             <div class="card-body">
-                <p>Select a common offence to see standard wording:</p>
                 <select id="draftSelect" class="select-input" onchange="runDraft()">
                     <option value="">-- Choose Offence --</option>
-                    <option
+                    <option value="s60">s60 - Prejudicial Conduct</option>
+                    <option value="s31">s31 - Obstructing Service Police</option>
+                    <option value="s33">s33 - Assaulting a Superior</option>
+                    <option value="s24">s24 - AWOL</option>
+                </select>
+                <div id="draftOutput"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const dfdaData = [
+        { s: "s31", cat: "power", title: "Obstructing Service Police", desc: "Offence of hindering, resisting, or refusing to assist a service police member in the execution of duty." },
+        { s: "s60", cat: "offence", title: "Prejudicial Conduct", desc: "Acts likely to prejudice the discipline of, or bring discredit on, the Defence Force." },
+        { s: "s87", cat: "power", title: "Arrest without Warrant", desc: "Authority to arrest if there is reasonable belief of a service offence." },
+        { s: "s101", cat: "power", title: "Search of Person", desc: "Search authority for persons in custody or under arrest." },
+        { s: "s24", cat: "offence", title: "Absence Without Leave (AWOL)", desc: "Absent from place of duty without authority." },
+        { s: "s33", cat: "offence", title: "Assaulting a Superior Officer", desc: "Physical contact or threatening behavior toward a superior." }
+    ];
+
+    function showTab(tab) {
+        ['guide', 'calc', 'draft'].forEach(v => {
+            document.getElementById('view-' + v).classList.toggle('hidden', v !== tab);
+        });
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach((t, i) => t.classList.toggle('active', ['guide', 'calc', 'draft'][i] === tab));
+    }
+
+    function render() {
+        const q = document.getElementById('search').value.toLowerCase().trim();
+        const res = document.getElementById('results');
+        res.innerHTML = '';
+        
+        const filtered = dfdaData.filter(i => {
+            return i.title.toLowerCase().includes(q) || 
+                   i.s.toLowerCase().includes(q) || 
+                   i.desc.toLowerCase().includes(q);
+        });
+
+        if (filtered.length === 0) {
+            res.innerHTML = '<p style="text-align:center; color:#666;">No sections found. Try a different term.</p>';
+            return;
+        }
+
+        filtered.forEach(i => {
+            const noteKey = 'note-' + i.s;
+            const savedNote = localStorage.getItem(noteKey) || '';
+            res.innerHTML += `
+                <div class="card ${i.cat}">
+                    <div class="card-header">
+                        <span class="s-tag">${i.s}</span>
+                        <span class="badge bg-${i.cat}">${i.cat}</span>
+                    </div>
+                    <div class="card-body">
+                        <strong>${i.title}</strong>
+                        <p>${i.desc}</p>
+                        <textarea placeholder="Add private notes..." oninput="localStorage.setItem('note-${i.s}', this.value)">${savedNote}</textarea>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function runCalc() {
+        const rank = document.getElementById('rankSelect').value;
+        const out = document.getElementById('calcOutput');
+        const maps = {
+            officer: "<b>CO Power (Officer):</b><br>• Fine: 14 days pay<br>• Reprimand",
+            snco: "<b>CO Power (SNCO):</b><br>• Fine: 28 days pay<br>• Reduction in Rank (1 grade)",
+            jr: "<b>CO Power (Junior Rank):</b><br>• Detention: 28 days<br>• Fine: 28 days pay<br>• Reduction in Rank"
+        };
+        out.innerHTML = maps[rank] || "Select a rank.";
+    }
+
+    function runDraft() {
+        const code = document.getElementById('draftSelect').value;
+        const out = document.getElementById('draftOutput');
+        const drafts = {
+            s60: "That you [Rank, Name, PMKeyS], being a defence member, did at [Place] on or about [Date] behave in a manner likely to prejudice the discipline of the Defence Force...",
+            s31: "That you [Rank, Name, PMKeyS], being a defence member, did at [Place] on or about [Date] obstruct [Rank/Name of Police Member]...",
+            s33: "That you [Rank, Name, PMKeyS], being a defence member, did at [Place] on or about [Date] assault [Rank/Name], a superior officer.",
+            s24: "That you [Rank, Name, PMKeyS], being a defence member, did at [Place] between [Start Date] and [End Date] absent yourself..."
+        };
+        out.innerHTML = drafts[code] ? `<div class="template-box">${drafts[code]}</div>` : "";
+    }
+
+    // Initial render call
+    render();
+</script>
+</body>
+</html>
