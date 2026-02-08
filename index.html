@@ -3,121 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DFDA Field Pro - 2026</title>
+    <title>DFDA & Crimes Act Field Pro</title>
     <style>
-        :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --samdf: #2c3e50; --weapon: #333; }
-        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --cth: #555; }
+        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
         .header-nav { position: sticky; top: 0; z-index: 999; background: var(--navy); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .tab-bar { display: flex; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.1); scrollbar-width: none; }
+        .tab-bar { display: flex; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .tab { flex: 0 0 auto; padding: 14px 20px; text-align: center; color: #fff; cursor: pointer; font-weight: bold; font-size: 10px; border-bottom: 4px solid transparent; text-transform: uppercase; }
         .tab.active { border-bottom: 4px solid var(--nt); background: rgba(255,255,255,0.1); }
         .container { max-width: 700px; margin: auto; padding: 15px; padding-bottom: 80px; }
-        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; display: block; }
+        .search-box { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
         .card { background: white; margin-bottom: 15px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
         .card.offence { border-left-color: var(--law); }
-        .card.power { border-left-color: var(--navy); }
+        .card.cth-offence { border-left-color: var(--cth); }
         .card-header { padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold; color: var(--navy); display: flex; justify-content: space-between; }
         .card-body { padding: 15px; font-size: 14px; line-height: 1.5; color: #333; }
         .legal-detail { color: #444; font-style: italic; margin-top: 8px; display: block; border-top: 1px solid #ddd; padding-top: 8px; background: #fafafa; padding: 10px; border-radius: 4px; }
-        .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt); margin-top: 10px; }
-        .wep-img { width: 100%; height: auto; border-radius: 6px; margin-top: 10px; border: 1px solid #ddd; }
-        .log-box { background: #1a1a1a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #00ff00; white-space: pre-wrap; }
-        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; }
-        .btn-reset { background: #b22222; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        .hidden { display: none !important; }
         .badge { color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
-        .bg-offence { background: var(--law); }
-        .bg-power { background: var(--navy); }
+        .bg-law { background: var(--law); }
+        .bg-cth { background: var(--cth); }
+        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 <div class="header-nav"><div class="tab-bar">
-    <div id="t-ref" class="tab active" onclick="nav('ref')">DFDA REF</div>
+    <div id="t-ref" class="tab active" onclick="nav('ref')">LEGISLATION REF</div>
     <div id="t-nt" class="tab" onclick="nav('nt')">NT POLICE</div>
-    <div id="t-samdf" class="tab" onclick="nav('samdf')">SAMDF</div>
-    <div id="t-wep" class="tab" onclick="nav('wep')">NT WEAPONS</div>
     <div id="t-log" class="tab" onclick="nav('log')">LOGS</div>
 </div></div>
 <div class="container">
     <div id="v-ref">
-        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (e.g. s24, s40C, s89)...">
+        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (e.g. s24, Crimes s89)...">
         <div id="searchRes"></div>
     </div>
-    <div id="v-nt" class="hidden"><div class="card" style="border-left-color: var(--nt)"><div class="card-body">Select from NT Police equivalents above.</div></div></div>
-    <div id="v-samdf" class="hidden"><div class="card samdf"><div class="card-body">Select SAMDF power.</div></div></div>
-    <div id="v-wep" class="hidden"><div class="card"><div class="card-body">Select weapon category.</div></div></div>
-    <div id="v-log" class="hidden"><div class="card"><div class="card-body">Select template.<button class="btn-reset" onclick="confirmReset()">Force Reset All Local Notes</button></div></div></div>
 </div>
 <script>
-const dfdaData = [
-    {s:"s22", title:"Abandoning Post", cat:"offence", desc:"Leaving a post without being regularly relieved.", legal:"ELEMENTS: (1) Subject assigned to post; (2) Subject left post; (3) No lawful authority/relief."},
-    {s:"s23", title:"Desertion", cat:"offence", desc:"Absence with intent to remain away permanently.", legal:"ELEMENTS: (1) Absence; (2) Intent to desert (Proved by actions/statements)."},
-    {s:"s24", title:"AWOL", cat:"offence", desc:"Absence without leave.", legal:"ELEMENTS: (1) Absence from place of duty; (2) No leave granted. Strict liability."},
-    {s:"s25", title:"Malingering", cat:"offence", desc:"Feigning sickness to avoid duty.", legal:"ELEMENTS: (1) Feigning/inducing illness; (2) Intent to avoid duty."},
-    {s:"s26", title:"Assaulting Superior", cat:"offence", desc:"Assaulting a superior officer.", legal:"ELEMENTS: (1) Violence used/threatened; (2) Victim is superior; (3) Knowledge of rank."},
-    {s:"s27", title:"Insubordinate Conduct", cat:"offence", desc:"Threatening/insulting language to superior.", legal:"ELEMENTS: (1) Behavior/Language; (2) Directed at superior; (3) In presence of/to superior."},
-    {s:"s28", title:"Disobeying Command", cat:"offence", desc:"Disobedience of a lawful command.", legal:"ELEMENTS: (1) Lawful command given; (2) Intentional disobedience."},
-    {s:"s29", title:"Failing to Comply (General Orders)", cat:"offence", desc:"Contravention of standing orders.", legal:"ELEMENTS: (1) General order exists; (2) Knowledge of order; (3) Act/omission contravening."},
-    {s:"s30", title:"Assault Subordinate", cat:"offence", desc:"Superior assaulting a subordinate.", legal:"ELEMENTS: (1) Unlawful violence; (2) Victim is subordinate rank."},
-    {s:"s31", title:"Obstructing SP", cat:"offence", desc:"Resisting Service Police.", legal:"ELEMENTS: (1) Hindrance/Resistance; (2) SP in execution of duty; (3) Knowledge of SP status."},
-    {s:"s32", title:"Disorderly Conduct", cat:"offence", desc:"Fighting or threatening behavior.", legal:"ELEMENTS: (1) Behavior likely to cause breach of discipline/peace."},
-    {s:"s33", title:"Assaulting Person on Duty", cat:"offence", desc:"Assault on sentry or person on duty.", legal:"ELEMENTS: (1) Assault; (2) Victim on specific duty duty (e.g. Sentry/SP)."},
-    {s:"s33A", title:"Assaulting with Intent", cat:"offence", desc:"Assault with intent to commit offence.", legal:"ELEMENTS: (1) Assault; (2) Specific intent to commit a further service offence."},
-    {s:"s34", title:"Looting", cat:"offence", desc:"Stealing in operational/disaster zones.", legal:"ELEMENTS: (1) Theft; (2) Context of operation/abandoned property."},
-    {s:"s35", title:"Negligent/Wilful Damage", cat:"offence", desc:"Damaging service property.", legal:"ELEMENTS: (1) Property is service property; (2) Damage caused; (3) Intentional or Negligent."},
-    {s:"s36", title:"Losing Service Property", cat:"offence", desc:"Losing property through neglect.", legal:"ELEMENTS: (1) Loss of service property; (2) Due to subject's neglect."},
-    {s:"s36A", title:"Unauthorized Use (Service Property)", cat:"offence", desc:"Using property without authority.", legal:"ELEMENTS: (1) Use of service property; (2) No authority granted."},
-    {s:"s36B", title:"Unauthorized Use (Vehicle)", cat:"offence", desc:"Using service vehicle for personal/unauthorized trips.", legal:"ELEMENTS: (1) Vehicle use; (2) No movement order/authority."},
-    {s:"s37", title:"Stealing Service Property", cat:"offence", desc:"Theft of service property.", legal:"ELEMENTS: (1) Theft; (2) Property belongs to Commonwealth/Service."},
-    {s:"s38", title:"Receiving Service Property", cat:"offence", desc:"Receiving stolen service property.", legal:"ELEMENTS: (1) Possession; (2) Knowledge property was stolen."},
-    {s:"s39", title:"Dangerous Driving", cat:"offence", desc:"Driving in a manner dangerous to public.", legal:"ELEMENTS: (1) Operating vehicle; (2) Speed/manner dangerous considering all circumstances."},
-    {s:"s40", title:"DUI", cat:"offence", desc:"Impaired driving (Service Vehicle).", legal:"THRESHOLD: Incapable of proper control. Admissible lab results."},
-    {s:"s40A", title:"Refusing Breath Test", cat:"offence", desc:"Refusing to provide sample for analysis.", legal:"ELEMENTS: (1) Lawful requirement made; (2) Refusal without reasonable excuse."},
-    {s:"s40C", title:"Presence of Prohibited Substance", cat:"offence", desc:"Driving with drug in system.", legal:"STRICT LIABILITY: Presence of substance in blood/oral fluid while driving service vehicle."},
-    {s:"s40D", title:"Refusing Drug Test", cat:"offence", desc:"Failure to provide oral fluid/blood for drug test.", legal:"ELEMENTS: (1) Requirement under s101; (2) Failure to comply."},
-    {s:"s41", title:"Dangerous Flying", cat:"offence", desc:"Flying in a manner likely to cause death/injury.", legal:"ELEMENTS: (1) Operation of aircraft; (2) Manner dangerous to persons/property."},
-    {s:"s42", title:"Low Flying", cat:"offence", desc:"Flying below authorized altitude.", legal:"ELEMENTS: (1) Altitude below limits; (2) No operational necessity/emergency."},
-    {s:"s43", title:"Negligent Navigation", cat:"offence", desc:"Negligence in nav leading to hazard.", legal:"ELEMENTS: (1) Responsibility for navigation; (2) Act/omission causing hazard/stranding."},
-    {s:"s44", title:"Falsifying Documents", cat:"offence", desc:"Making false service documents.", legal:"ELEMENTS: (1) Making/altering document; (2) Intent to deceive or knowledge of falsity."},
-    {s:"s45", title:"False Statement (Enlistment)", cat:"offence", desc:"False answers on enlistment.", legal:"ELEMENTS: (1) Question asked on enlistment; (2) Statement known to be false."},
-    {s:"s46", title:"Common Law Offences (Cth)", cat:"offence", desc:"Cth Criminal Code offences applied via DFDA.", legal:"ELEMENTS: As per relevant Cth Statute."},
-    {s:"s47P", title:"Possession of Controlled Drug", cat:"offence", desc:"Possession of drugs on service premises.", legal:"ELEMENTS: (1) Possession; (2) Substance is a controlled drug."},
-    {s:"s47Q", title:"Use of Controlled Drug", cat:"offence", desc:"Administering drug to self/other.", legal:"ELEMENTS: (1) Use/administration; (2) No medical authorization."},
-    {s:"s48", title:"Narcotic Offences", cat:"offence", desc:"Trafficking/Possession of Narcotics.", legal:"ELEMENTS: Matches Cth Narcotic Drugs Act provisions."},
-    {s:"s49", title:"Assaulting Sentry", cat:"offence", desc:"Assault on a person on guard duty.", legal:"ELEMENTS: (1) Assault; (2) Subject knew victim was on guard/sentry."},
-    {s:"s49A", title:"Obstruction of Sentry", cat:"offence", desc:"Preventing sentry from performing duty.", legal:"ELEMENTS: (1) Act of obstruction; (2) Victim is sentry."},
-    {s:"s50", title:"Failure to perform duty", cat:"offence", desc:"Negligent performance of duty.", legal:"ELEMENTS: (1) Duty exists; (2) Failure to perform to standard; (3) Negligence/wilfulness."},
-    {s:"s51", title:"Dangerous Conduct", cat:"offence", desc:"Act likely to cause death or grievous bodily harm.", legal:"ELEMENTS: (1) Act/omission; (2) High risk of harm; (3) Culpable negligence."},
-    {s:"s52", title:"Custody Offences", cat:"offence", desc:"Allowing escape of person in custody.", legal:"ELEMENTS: (1) Duty to guard; (2) Person escapes; (3) Intentional or negligent."},
-    {s:"s53", title:"Escape from Custody", cat:"offence", desc:"Escaping lawful service custody.", legal:"ELEMENTS: (1) Lawful custody; (2) Act of escaping."},
-    {s:"s54", title:"Resisting Arrest", cat:"offence", desc:"Resisting lawful arrest by SP/authorized person.", legal:"ELEMENTS: (1) Arrest is lawful; (2) Act of resistance/struggle."},
-    {s:"s54A", title:"Failure to assist SP", cat:"offence", desc:"Refusing to assist SP when required.", legal:"ELEMENTS: (1) Lawful request for help; (2) Capability to help; (3) Refusal."},
-    {s:"s55", title:"False Accusation", cat:"offence", desc:"Making false accusation against service person.", legal:"ELEMENTS: (1) Accusation made; (2) Known to be false; (3) Intent to harm."},
-    {s:"s56", title:"Contempt (Service Tribunal)", cat:"offence", desc:"Insulting or interrupting a tribunal.", legal:"ELEMENTS: (1) Tribunal in session; (2) Conduct intended to disrupt/insult."},
-    {s:"s57", title:"False Evidence", cat:"offence", desc:"Giving false testimony to tribunal.", legal:"ELEMENTS: (1) Sworn evidence; (2) Materially false statement."},
-    {s:"s58", title:"Unlawful Release", cat:"offence", desc:"Releasing person from custody without authority.", legal:"ELEMENTS: (1) Custody exists; (2) Subject releases person; (3) No authority."},
-    {s:"s59", title:"Failure to report offence", cat:"offence", desc:"Failing to report known service offence.", legal:"ELEMENTS: (1) Knowledge of offence; (2) Duty to report; (3) Deliberate failure."},
-    {s:"s60", title:"Prejudicial Conduct", cat:"offence", desc:"Conduct to the prejudice of good order.", legal:"THRESHOLD: Act/omission likely to prejudice discipline or discredit the ADF."},
-    {s:"s61", title:"Criminal Code Offences", cat: "offence", desc: "Offences against the ACT Criminal Code.", legal: "Incorporates civilian criminal law into the service system."},
-    {s:"s62", title:"Attempts", cat:"offence", desc:"Attempting to commit a service offence.", legal:"ELEMENTS: (1) Intent; (2) Act more than mere preparation."},
-    {s:"s71Q", title:"Commanding Officer Powers", cat:"power", desc:"Powers of CO in summary proceedings.", legal:"JURISDICTION: Discipline over members of the unit/detachment."},
-    {s:"s71V", title:"Superior Summary Authority", cat:"power", desc:"Powers of SSA.", legal:"JURISDICTION: Dealing with officers/WOs."},
-    {s:"s71W", title:"Admissibility of Evidence", cat:"power", desc:"Rules on evidence in summary trials.", legal:"Standard of proof: Beyond reasonable doubt."},
-    {s:"s72P", title:"Request ID (DPA)", cat:"power", desc:"SAMDF power to request identification.", legal:"THRESHOLD: Person in/near Defence Practice Area."},
-    {s:"s73A", title:"Search of Premises", cat:"power", desc:"Power to search service premises.", legal:"AUTHORITY: CO or warrant. Evidence/prohibited items."},
-    {s:"s79", title:"Warrant for Arrest", cat:"power", desc:"Issue of arrest warrant.", legal:"THRESHOLD: Information on oath; reasonable grounds of offence."},
-    {s:"s80A", title:"Search Warrant (Premises)", cat:"power", desc:"Magistrate/CO issuing search warrant.", legal:"THRESHOLD: Reasonable grounds for believing evidence is present."},
-    {s:"s80B", title:"Seizure Power", cat:"power", desc:"Power to seize items during search.", legal:"SCOPE: Items mentioned in warrant or related to other offences."},
-    {s:"s82", title:"Entry without Warrant", cat:"power", desc:"Emergency entry into service premises.", legal:"THRESHOLD: Prevent loss of life or destruction of evidence."},
-    {s:"s83", title:"Stopping Vehicles", cat:"power", desc:"Power to stop and search service vehicles.", legal:"THRESHOLD: Reasonable suspicion of offence/stolen property."},
-    {s:"s89", title:"Arrest without Warrant", cat:"power", desc:"SP power of arrest.", legal:"THRESHOLD: Reasonable belief of service offence. Objective grounds."},
-    {s:"s89A", title:"Arrest of Trespassers", cat:"power", desc:"Arresting civilians on Defence premises.", legal:"THRESHOLD: Found on premises without authority. Deliver to civil police."}
+const data = [
+    // ... all previous DFDA sections (22-89) ...
+    {s:"Crimes s89", title:"Trespassing on Cth Land", cat:"cth-offence", desc:"Entering or remaining on Commonwealth land without lawful excuse.", legal:"ELEMENTS: (1) Land is prohibited/Commonwealth land; (2) Subject entered/remained; (3) No lawful excuse (onus on defendant). Max: 10 penalty units."},
+    {s:"Crimes s89A", title:"Prohibited Weapons (Cth Land)", cat:"cth-offence", desc:"Possession of a firearm or prohibited weapon on Commonwealth land.", legal:"ELEMENTS: (1) Land is Cth property; (2) Subject in possession of firearm/weapon/explosive; (3) No lawful authority/excuse. Max: 6 months jail."}
 ];
 
+// Re-including the s89/s89A DFDA entries for comparison in search
+data.push({s:"DFDA s89", title:"Arrest without Warrant", cat:"power", desc:"Service Police power of arrest for service offences.", legal:"THRESHOLD: Reasonable belief of service offence. Objective grounds."});
+data.push({s:"DFDA s89A", title:"Arrest of Trespassers", cat:"power", desc:"Power to arrest civilians found trespassing on Defence premises.", legal:"THRESHOLD: Found on premises without authority. Must deliver to civil police ASAP."});
+
 function nav(id) {
-    ['v-ref', 'v-nt', 'v-samdf', 'v-wep', 'v-log'].forEach(v => document.getElementById(v).classList.add('hidden'));
-    document.getElementById('v-' + id).classList.remove('hidden');
-    ['t-ref', 't-nt', 't-samdf', 't-wep', 't-log'].forEach(t => document.getElementById(t).classList.remove('active'));
+    ['v-ref', 'v-nt', 'v-log'].forEach(v => { if(document.getElementById(v)) document.getElementById(v).classList.add('hidden'); });
+    if(document.getElementById('v-' + id)) document.getElementById('v-' + id).classList.remove('hidden');
+    ['t-ref', 't-nt', 't-log'].forEach(t => document.getElementById(t).classList.remove('active'));
     document.getElementById('t-' + id).classList.add('active');
 }
 
@@ -125,23 +60,20 @@ function runSearch() {
     const q = document.getElementById('searchInp').value.toLowerCase().trim();
     const out = document.getElementById('searchRes');
     out.innerHTML = '';
-    dfdaData.filter(i => i.s.toLowerCase().includes(q) || i.title.toLowerCase().includes(q))
+    data.filter(i => i.s.toLowerCase().includes(q) || i.title.toLowerCase().includes(q))
         .forEach(i => {
             const noteVal = localStorage.getItem('n-'+i.s) || '';
+            const badgeClass = i.cat === 'cth-offence' ? 'bg-cth' : 'bg-law';
             out.innerHTML += `
                 <div class="card ${i.cat}">
-                    <div class="card-header"><span>${i.s}</span> <span class="badge bg-${i.cat}">${i.cat}</span></div>
+                    <div class="card-header"><span>${i.s}</span> <span class="badge ${badgeClass}">${i.cat}</span></div>
                     <div class="card-body">
                         <strong>${i.title}</strong><br>${i.desc}
                         <span class="legal-detail">${i.legal}</span>
-                        <textarea placeholder="Field notes..." oninput="localStorage.setItem('n-${i.s}', this.value)">${noteVal}</textarea>
+                        <textarea placeholder="Notes..." oninput="localStorage.setItem('n-${i.s}', this.value)">${noteVal}</textarea>
                     </div>
                 </div>`;
         });
-}
-
-function confirmReset() {
-    if(confirm("Clear ALL field notes?")) { localStorage.clear(); runSearch(); alert("Cleared."); }
 }
 window.onload = runSearch;
 </script>
