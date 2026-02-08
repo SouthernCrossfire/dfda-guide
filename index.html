@@ -9,12 +9,11 @@
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         .header-nav { position: sticky; top: 0; z-index: 999; background: var(--navy); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .tab-bar { display: flex; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.1); scrollbar-width: none; }
-        .tab-bar::-webkit-scrollbar { display: none; }
-        .tab { flex: 0 0 auto; padding: 14px 15px; text-align: center; color: #fff; cursor: pointer; font-weight: bold; font-size: 10px; transition: 0.2s; border-bottom: 4px solid transparent; text-transform: uppercase; }
+        .tab-bar { display: flex; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.1); scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .tab { flex: 0 0 auto; padding: 14px 20px; text-align: center; color: #fff; cursor: pointer; font-weight: bold; font-size: 10px; border-bottom: 4px solid transparent; text-transform: uppercase; }
         .tab.active { border-bottom: 4px solid var(--nt); background: rgba(255,255,255,0.1); }
 
-        .container { max-width: 700px; margin: auto; padding: 15px; padding-bottom: 50px; }
+        .container { max-width: 700px; margin: auto; padding: 15px; padding-bottom: 80px; }
         .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; display: block; }
         
         .card { background: white; margin-bottom: 15px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
@@ -26,15 +25,16 @@
         .card-header { padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold; color: var(--navy); display: flex; justify-content: space-between; align-items: center; }
         .card-body { padding: 15px; font-size: 14px; line-height: 1.5; color: #333; }
         
-        .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt); margin-top: 10px; line-height: 1.6; }
-        .log-box { background: #1a1a1a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #00ff00; white-space: pre-wrap; }
+        .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt); margin-top: 10px; }
+        .wep-img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; margin-top: 10px; border: 1px solid #ddd; }
+        .log-box { background: #1a1a1a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #00ff00; white-space: pre-wrap; margin-bottom: 10px; }
         
         textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; }
+        .btn-reset { background: #b22222; color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; }
         .hidden { display: none !important; }
         .badge { color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
         .bg-offence { background: var(--law); }
         .bg-power { background: var(--navy); }
-        .legal-detail { color: #555; font-style: italic; margin-top: 5px; display: block; border-top: 1px solid #eee; padding-top: 5px; }
     </style>
 </head>
 <body>
@@ -51,13 +51,13 @@
 
 <div class="container">
     <div id="v-ref">
-        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (e.g. s31, s89)...">
+        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (s89, s31)...">
         <div id="searchRes"></div>
     </div>
 
     <div id="v-nt" class="hidden">
         <div class="card" style="border-left-color: var(--nt)">
-            <div class="card-header">NT Police Comparison</div>
+            <div class="card-header">NT Police Equivalents</div>
             <div class="card-body">
                 <select id="ntSel" class="select-input" onchange="runNT()">
                     <option value="">-- Choose Incident --</option>
@@ -88,13 +88,14 @@
 
     <div id="v-wep" class="hidden">
         <div class="card wep">
-            <div class="card-header">NT Weapons Control Act</div>
+            <div class="card-header">NT Weapons Visual Ref</div>
             <div class="card-body">
                 <select id="wepSel" class="select-input" onchange="runWep()">
-                    <option value="">-- Select Category --</option>
-                    <option value="prohibited">Prohibited Weapons (Illegal)</option>
-                    <option value="controlled">Controlled Weapons (Lawful Excuse)</option>
-                    <option value="knives">Knives & Blades</option>
+                    <option value="">-- Select Item --</option>
+                    <option value="flick">Flick / Gravity Knives</option>
+                    <option value="knuckle">Knuckle Dusters</option>
+                    <option value="oc">OC / Capsicum Spray</option>
+                    <option value="taser">CED / Tasers</option>
                 </select>
                 <div id="wepRes"></div>
             </div>
@@ -103,7 +104,7 @@
 
     <div id="v-log" class="hidden">
         <div class="card" style="border-left-color: var(--navy)">
-            <div class="card-header">Field Log Templates</div>
+            <div class="card-header">Field Logs</div>
             <div class="card-body">
                 <select id="logSel" class="select-input" onchange="runLog()">
                     <option value="">-- Choose Template --</option>
@@ -111,6 +112,7 @@
                     <option value="drunk">s60 - Intoxication Entry</option>
                 </select>
                 <div id="logRes"></div>
+                <button class="btn-reset" onclick="confirmReset()">FORCE RESET ALL NOTES</button>
             </div>
         </div>
     </div>
@@ -118,21 +120,15 @@
 
 <script>
     const dfdaData = [
-        { s: "s31", title: "Obstructing Service Police", cat: "offence", desc: "Hindering or resisting service police in execution of duty.", legal: "Must prove knowledge of police status. Max: 2 years jail." },
-        { s: "s40", title: "Driving under Influence", cat: "offence", desc: "Driving service vehicle while impaired by alcohol or drugs.", legal: "Threshold: Incapable of proper control." },
-        { s: "s89(1)", title: "Arrest Without Warrant", cat: "power", desc: "Power to arrest on reasonable belief of a service offence.", legal: "Objective 'Reasonable Grounds' test. Inform of reason ASAP." }
+        { s: "s31", title: "Obstructing Service Police", cat: "offence", desc: "Hindering or resisting service police.", legal: "Must prove knowledge of status. Max 2 yrs." },
+        { s: "s47C", title: "Theft", cat: "offence", desc: "Dishonestly appropriating property.", legal: "Mirroring Cth Criminal Code." },
+        { s: "s89(1)", title: "Arrest Without Warrant", cat: "power", desc: "Arrest on reasonable belief of service offence.", legal: "Objective grounds required. Inform immediately." }
     ];
 
     function nav(id) {
-        ['v-ref', 'v-nt', 'v-samdf', 'v-wep', 'v-log'].forEach(v => {
-            const el = document.getElementById(v);
-            if(el) el.classList.add('hidden');
-        });
+        ['v-ref', 'v-nt', 'v-samdf', 'v-wep', 'v-log'].forEach(v => document.getElementById(v).classList.add('hidden'));
         document.getElementById('v-' + id).classList.remove('hidden');
-        ['t-ref', 't-nt', 't-samdf', 't-wep', 't-log'].forEach(t => {
-            const el = document.getElementById(t);
-            if(el) el.classList.remove('active');
-        });
+        ['t-ref', 't-nt', 't-samdf', 't-wep', 't-log'].forEach(t => document.getElementById(t).classList.remove('active'));
         document.getElementById('t-' + id).classList.add('active');
     }
 
@@ -143,61 +139,50 @@
         dfdaData.filter(i => i.s.toLowerCase().includes(q) || i.title.toLowerCase().includes(q))
             .forEach(i => {
                 const noteVal = localStorage.getItem('n-'+i.s) || '';
-                out.innerHTML += `
-                    <div class="card ${i.cat}">
-                        <div class="card-header"><span>${i.s}</span> <span class="badge bg-${i.cat}">${i.cat}</span></div>
-                        <div class="card-body">
-                            <strong>${i.title}</strong><br>${i.desc}
-                            <span class="legal-detail">${i.legal}</span>
-                            <textarea placeholder="Field notes..." oninput="localStorage.setItem('n-${i.s}', this.value)">${noteVal}</textarea>
-                        </div>
-                    </div>`;
+                out.innerHTML += `<div class="card ${i.cat}"><div class="card-header"><span>${i.s}</span> <span class="badge bg-${i.cat}">${i.cat}</span></div><div class="card-body"><strong>${i.title}</strong><br>${i.desc}<br><textarea placeholder="Notes..." oninput="localStorage.setItem('n-${i.s}', this.value)">${noteVal}</textarea></div></div>`;
             });
     }
 
     function runNT() {
         const val = document.getElementById('ntSel').value;
         const out = document.getElementById('ntRes');
-        const ntMap = {
-            dui: "<b>NT Traffic Act s25:</b> High Range (>0.15) = 20 penalty units. <b>Service:</b> s40.",
-            assault: "<b>NT Criminal Code s188:</b> Common Assault = 2 yrs jail. <b>Service:</b> s33/s61.",
-            theft: "<b>NT Criminal Code s210:</b> Stealing = 7 yrs jail. <b>Service:</b> s47C."
-        };
-        out.innerHTML = val ? `<div class="nt-box">${ntMap[val]}</div>` : "";
+        const map = { dui: "NT Traffic Act s25: High Range (>0.15). Service: s40.", assault: "NT Code s188: Common Assault. Service: s33/s61.", theft: "NT Code s210: Stealing. Service: s47C." };
+        out.innerHTML = val ? `<div class="nt-box">${map[val]}</div>` : "";
     }
 
     function runSAM() {
         const val = document.getElementById('samSel').value;
         const out = document.getElementById('samRes');
-        const samMap = {
-            id: "<b>Defence Act s72P:</b> May request ID in DPA. Refusal is a criminal offence.",
-            search_v: "<b>Defence Act s72L:</b> Stop and search vehicles/vessels in DPA.",
-            arrest: "<b>Defence Act s72Q:</b> Arrest for 'relevant offences' on Defence premises."
-        };
-        out.innerHTML = val ? `<div class="nt-box" style="border-color:var(--samdf)">${samMap[val]}</div>` : "";
+        const map = { id: "s72P: Request ID in DPA.", search_v: "s72L: Vehicle search in DPA.", arrest: "s72Q: Arrest on premises." };
+        out.innerHTML = val ? `<div class="nt-box">${map[val]}</div>` : "";
     }
 
     function runWep() {
         const val = document.getElementById('wepSel').value;
         const out = document.getElementById('wepRes');
-        const wepMap = {
-            prohibited: "<b>Prohibited (Illegal):</b> Flick knives, butterfly knives, knuckle dusters, OC spray, tasers, and silencers. Possession requires specific Police exemption.",
-            controlled: "<b>Controlled:</b> Daggers, batons, crossbows, and spear guns. Carrying in public requires a 'Lawful Excuse' (e.g., sport, work).",
-            knives: "<b>Knives:</b> Illegal to carry in public without lawful excuse. NT Code s188/s189. Self-defence is generally NOT a lawful excuse in NT."
+        const map = {
+            flick: { t: "Prohibited (Schedule 1)", d: "Automatic, gravity, or centrifugal knives.", img: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Switchblade_knife.jpg" },
+            knuckle: { t: "Prohibited (Schedule 1)", d: "Knuckle dusters or any weighted fist weapon.", img: "https://upload.wikimedia.org/wikipedia/commons/1/18/Cestus-KnuckleDuster.jpg" },
+            oc: { t: "Prohibited (Schedule 1)", d: "Capsicum or Pepper spray aerosols.", img: "https://upload.wikimedia.org/wikipedia/commons/d/d6/OC_spray_canister.jpg" },
+            taser: { t: "Prohibited (Schedule 1)", d: "Conducted Energy Devices / TASERS.", img: "https://upload.wikimedia.org/wikipedia/commons/1/13/Taser_X26.jpg" }
         };
-        out.innerHTML = val ? `<div class="nt-box" style="border-color:var(--weapon)">${wepMap[val]}</div>` : "";
+        out.innerHTML = val ? `<div class="nt-box"><strong>${map[val].t}</strong><p>${map[val].d}</p><img src="${map[val].img}" class="wep-img"></div>` : "";
     }
 
     function runLog() {
         const val = document.getElementById('logSel').value;
         const out = document.getElementById('logRes');
-        const logs = {
-            arrest_log: "DTG: [Time]\nAUTHORITY: s89(1) DFDA\nNARRATIVE: Arrested for [Offence]. Told subject reason.",
-            drunk: "DTG: [Time]\nNARRATIVE: Subject staggering, slurred speech. Logged under s60."
-        };
-        out.innerHTML = val ? `<div class="log-box">${logs[val]}</div>` : "";
+        const map = { arrest_log: "DTG: [Time]\nAUTHORITY: s89(1) DFDA\nNARRATIVE: Arrested for [Offence].", drunk: "DTG: [Time]\nNARRATIVE: Slurred speech, staggering. s60." };
+        out.innerHTML = val ? `<div class="log-box">${map[val]}</div>` : "";
     }
 
+    function confirmReset() {
+        if (confirm("Clear all field notes? This cannot be undone.")) {
+            localStorage.clear();
+            runSearch();
+            alert("All notes deleted.");
+        }
+    }
     window.onload = runSearch;
 </script>
 </body>
