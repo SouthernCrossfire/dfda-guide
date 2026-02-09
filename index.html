@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ADF Legal Suite v22.0</title>
+    <title>ADF Legal Suite v23.0</title>
     <style>
         :root { --navy: #1a3a5f; --law: #b22222; --samdf: #2d5a27; --gold: #d5763e; }
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; }
@@ -40,29 +40,40 @@
 
 <script>
 const db = [
-    /* OFFENCES - DFDA 1982 (Compilation 11/12/2024 - C2024C00861) */
-    {s:"22", t:"Desertion", c:"off", d:"Absence with intent to stay away permanently.", p:"Proof: Must show intent to never return (e.g. disposal of kit, statements)."},
-    {s:"23", t:"Absence from duty", c:"off", d:"Failing to report for duty or leaving duty without authority.", p:"Elements: (1) Assigned to duty; (2) Failed to attend or left; (3) Unauthorized."},
-    {s:"24", t:"Absence without leave (AWOL)", c:"off", d:"Unauthorized absence from duty or place of duty.", p:"Strict Liability. Prove absence and lack of valid leave authority."},
-    {s:"25", t:"Assaulting a superior officer", c:"off", d:"Applying force or threatening a superior with violence.", p:"Elements: (1) Assault; (2) Victim is superior; (3) Knowledge of status. Defense in s25(2)."},
-    {s:"26", t:"Insubordinate conduct", c:"off", d:"Threatening/insulting language or behavior to a superior.", p:"Context: Behavior must be openly defiant; heard by or intended for superior."},
-    {s:"27", t:"Disobeying a lawful command", c:"off", d:"Wilfully disobeying a specific command given by a superior.", p:"Command must be specific, certain, and relate to a military duty."},
+    /* OFFENCES - DFDA 1982 (Compilation 11/12/2024) */
+    {s:"22", t:"Desertion", c:"off", d:"Absence with intent to stay away permanently.", p:"Proof: Must show specific intent (e.g., disposal of uniform, statements)."},
+    {s:"23", t:"Absence from duty", c:"off", d:"Failing to report for duty or leaving duty without authority.", p:"Elements: (1) Assigned to duty; (2) Failed to attend/left; (3) Unauthorized."},
+    {s:"24", t:"Absence without leave (AWOL)", c:"off", d:"Unauthorized absence from duty or place of duty.", p:"Strict Liability. Facts of absence + lack of authority = offence."},
+    {s:"25", t:"Assaulting a superior officer", c:"off", d:"Violence or threats to a superior.", p:"Elements: (1) Assault; (2) Victim is superior; (3) Knowledge of status."},
+    {s:"26", t:"Insubordinate conduct", c:"off", d:"Insulting language or behavior to a superior.", p:"Must be heard by or intended for superior; affects discipline."},
+    {s:"27", t:"Disobeying a lawful command", c:"off", d:"Wilfully disobeying a specific command given by a superior.", p:"Command must be specific, relates to duty, and not be illegal."},
     {s:"29", t:"Failing to comply with a general order", c:"off", d:"Contravention of Defence Instructions (DIs) or Standing Orders.", p:"Threshold: Existence of order + publication + non-compliance."},
-    {s:"31", t:"Obstruction of service police", c:"off", d:"Hindering or resisting a service police officer in execution of duty.", p:"Legal: SP must be acting 'intra vires' (within legal power)."},
-    {s:"33", t:"Assault, insulting words etc.", c:"off", d:"Assaulting any person; creating a disturbance in a public place.", p:"Elements: Conduct likely to cause breach of discipline or disturbance."},
+    {s:"31", t:"Obstruction of service police", c:"off", d:"Hindering or resisting a service police officer in duty.", p:"Legal: SP must be acting 'intra vires' (within legal power)."},
+    {s:"32", t:"Person on guard or watch", c:"off", d:"Intoxicated, asleep, or leaving post while on guard/watch duty.", p:"High-risk duty breach. s32(1) intoxication; s32(2) sleep/leaving."},
+    {s:"33", t:"Assault, insulting words etc.", c:"off", d:"Assaulting any person; creating a disturbance in a public place.", p:"Conduct likely to cause breach of discipline or disturbance."},
+    {s:"35", t:"Negligence in performance of duty", c:"off", d:"Performing duty so negligently it causes loss or injury.", p:"Threshold: High degree of negligence beyond simple error."},
+    {s:"36", t:"Dangerous conduct", c:"off", d:"Conduct creating a risk of death or serious injury to another.", p:"Recklessness in handling service matters or equipment."},
+    {s:"36A", t:"Unauthorised discharge of weapon", c:"off", d:"Discharging a weapon without specific authority.", p:"Strict Liability: Discharge occurred without order/excuse."},
+    {s:"36B", t:"Negligent discharge of weapon", c:"off", d:"Discharging a weapon through negligence (ND).", p:"Proof: Failure to follow safety/clearing protocols."},
+    {s:"37", t:"Drunkenness on duty etc.", c:"off", d:"Intoxicated by alcohol or drugs while on/expected for duty.", p:"Definition: Faculties impaired or behaviour discrediting ADF."},
+    {s:"40", t:"Driving while intoxicated", c:"off", d:"Driving a service vehicle while impaired by alcohol/drugs.", p:"Evidence: Impairment observations or positive analysis results."},
+    {s:"43", t:"Destruction of service property", c:"off", d:"Wilfully or recklessly destroying service property.", p:"Elements: (1) Cth property; (2) Intentional or reckless damage."},
+    {s:"47", t:"Stealing and receiving", c:"off", d:"Theft of service property or receiving stolen goods.", p:"Links to Cth Criminal Code definitions of 'theft/dishonesty'."},
+    {s:"47P", t:"Possession of prohibited drugs", c:"off", d:"Possessing prohibited drugs on service premises.", p:"Strict Liability: Presence of substance in accused's control."},
     {s:"60", t:"Prejudicial conduct", c:"off", d:"Act/Omission likely to prejudice good order and discipline.", p:"Mandatory: Clearly articulate the 'Service Connection'."},
 
-    /* MP POWERS - DFDA 1982 (Compilation 11/12/2024 - C2024C00861) */
-    {s:"89", t:"Arrest without warrant", c:"pwr", d:"SP power to arrest on reasonable suspicion of service offence.", p:"Requirement: Must caution immediately and state grounds (s89(4))."},
-    {s:"90", t:"Search of arrested person", c:"pwr", d:"Power to search a person following arrest under s89.", p:"Scope: Search for weapons or evidence concealed on person."},
-    {s:"101W", t:"General Search/Seizure", c:"pwr", d:"General power to search premises and seize evidence.", p:"Requires warrant (s101X) or emergency/safety (s101Z)."},
+    /* MP POWERS - DFDA 1982 (Compilation 11/12/2024) */
+    {s:"89", t:"Arrest without warrant", c:"pwr", d:"SP power to arrest on reasonable suspicion of service offence.", p:"Must caution immediately and state grounds (s89(4))."},
+    {s:"90", t:"Search of arrested person", c:"pwr", d:"Search for weapons or evidence following an s89 arrest.", p:"Can be conducted at the scene or at a service police facility."},
+    {s:"101A", t:"Search of vehicles", c:"pwr", d:"Power to search Service vehicles for evidence.", p:"Threshold: Reasonable suspicion of evidence presence."},
+    {s:"101W", t:"General Search and Seizure", c:"pwr", d:"Power to search premises and seize evidence.", p:"Requires warrant (s101X) or emergency/safety (s101Z)."},
+    {s:"101Z", t:"Search in emergencies", c:"pwr", d:"Power to search/seize without warrant in urgent cases.", p:"Required: Serious/urgent risk to life, safety, or evidence destruction."},
 
-    /* SAMDF / DPA POWERS - Defence Act 1903 (C2025C00691) - FIXED PER PREVIOUS APPROVAL */
-    {s:"71L", t:"Declared explosive ordnance depots", c:"sam", d:"Ministerial power to declare EO depots for security.", p:"Legal foundation for heightened security zones."},
+    /* SAMDF POWERS - Defence Act 1903 (C2025C00691) */
+    {s:"71L", t:"Declared explosive ordnance depots", c:"sam", d:"Ministerial power to declare EO depots for security.", p:"Foundation for heightened security zones."},
     {s:"71S", t:"Requirement to provide name etc.", c:"sam", d:"Power to request identity and reason for presence.", p:"Member must identify as a Defence security official first (s71S(2))."},
-    {s:"71U", t:"Search of persons", c:"sam", d:"Search of person, clothing, and things in possession (e.g. bags).", p:"Includes both consent-based and non-consent risk-based searches."},
+    {s:"71U", t:"Search of persons", c:"sam", d:"Search of person, clothing, and things in possession (e.g. bags).", p:"Includes consent-based and risk-based non-consent searches."},
     {s:"71V", t:"Search of vehicles", c:"sam", d:"Power to search vehicles, cargo, and containers.", p:"Applies to vehicles entering, leaving, or within Defence premises."},
-    {s:"71W", t:"Seizure of things", c:"sam", d:"Seizing items found during search that pose a threat.", p:"Includes weapons or prohibited items. Provide documentation."},
     {s:"72P", t:"Offence: Failure to comply", c:"sam", d:"Refusal to provide name/address or reason for presence.", p:"Strict Liability. Ensure s71S protocol was followed first."},
     {s:"72V", t:"Arrest of trespassers", c:"sam", d:"Power to arrest person found on premises without authority.", p:"Handover to civil police (State/Federal) must be immediate."}
 ];
@@ -93,7 +104,7 @@ function render() {
                 </div>
                 <div class="card-b">
                     <strong>${x.t}</strong><br>${x.d}
-                    <div class="proof"><strong>Legal Requirement:</strong><br>${x.p}</div>
+                    <div class="proof"><strong>Threshold / Notes:</strong><br>${x.p}</div>
                 </div>
             </div>`;
     });
