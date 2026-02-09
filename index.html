@@ -3,115 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DFDA 1982 - Dec 2024 Compilation</title>
+    <title>DFDA 1982 - C2024C00861 Verified</title>
     <style>
-        :root { --navy: #1a3a5f; --crimson: #b22222; --burnt-orange: #d5763e; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f2f5; margin: 0; color: #1a1a1a; }
-        .header { position: sticky; top: 0; z-index: 99; background: var(--navy); display: flex; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-        .tab { flex: 1; padding: 18px 5px; color: #fff; text-align: center; cursor: pointer; font-size: 11px; font-weight: 800; text-transform: uppercase; border-bottom: 4px solid transparent; letter-spacing: 0.5px; }
-        .tab.active { border-bottom: 4px solid var(--burnt-orange); background: rgba(255,255,255,0.1); }
-        .container { max-width: 800px; margin: auto; padding: 15px; }
-        .search-bar { width: 100%; padding: 16px; border: 2px solid #bbb; border-radius: 12px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; outline: none; }
-        .search-bar:focus { border-color: var(--navy); }
-        .card { background: white; margin-bottom: 15px; border-radius: 10px; overflow: hidden; border-left: 6px solid var(--crimson); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .card-h { padding: 12px 15px; background: #f8f9fa; font-weight: bold; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
-        .card-b { padding: 15px; font-size: 14px; line-height: 1.6; }
-        .proof-box { margin-top: 10px; padding: 12px; background: #f4f6f8; border-radius: 6px; border-left: 3px solid #6c757d; font-size: 13px; color: #333; }
-        .badge { font-size: 10px; padding: 3px 8px; border-radius: 5px; color: #fff; background: var(--crimson); text-transform: uppercase; }
+        :root { --navy: #1a3a5f; --crimson: #b22222; --nt: #d5763e; }
+        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; color: #111; }
+        .h { position: sticky; top: 0; z-index: 10; background: var(--navy); display: flex; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .tab { flex: 1; padding: 16px 5px; color: #fff; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; border-bottom: 4px solid transparent; }
+        .tab.active { border-bottom: 4px solid var(--nt); background: rgba(255,255,255,0.1); }
+        .cnt { max-width: 800px; margin: auto; padding: 15px; }
+        .sb { width: 100%; padding: 15px; border: 2px solid #bbb; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
+        .card { background: #fff; margin-bottom: 12px; border-radius: 8px; border-left: 6px solid var(--crimson); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .power { border-left-color: var(--navy); }
+        .card-h { padding: 10px 15px; background: #f8f9fa; font-weight: bold; display: flex; justify-content: space-between; font-size: 13px; }
+        .card-b { padding: 15px; font-size: 14px; line-height: 1.5; }
+        .proof { margin-top: 10px; padding: 10px; background: #fdfdfd; border: 1px solid #eee; border-radius: 4px; font-size: 13px; border-left: 3px solid #ccc; }
         .hidden { display: none !important; }
-        .division-tag { font-size: 10px; color: #666; font-weight: normal; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div id="t-leg" class="tab active" onclick="nav('leg')">DFDA Offences</div>
-    <div id="t-pow" class="tab" onclick="nav('pow')">Investigative Powers</div>
+<div class="h">
+    <div id="t-leg" class="tab active" onclick="nav('leg')">Legislation (Dec 2024)</div>
+    <div id="t-nt" class="tab" onclick="nav('nt')">NT Mapping</div>
 </div>
 
-<div class="container">
+<div class="cnt">
     <div id="v-leg">
-        <input type="text" class="search-bar" id="searchInp" oninput="render()" placeholder="Search by Section # or Offence Name...">
+        <input type="text" class="sb" id="si" oninput="render()" placeholder="Search Section (e.g. 26, 33, AWOL)...">
         <div id="out"></div>
     </div>
-    <div id="v-pow" class="hidden"><div id="pow-out"></div></div>
+    <div id="v-nt" class="hidden"><div id="nt-out"></div></div>
 </div>
 
 <script>
-// DATA AUDITED AGAINST FEDERAL REGISTER OF LEGISLATION (C2024C00861)
-const offences = [
-    {s:"22", t:"Abandoning post etc.", d:"Leaving a post, guard, or watch before being regularly relieved.", p:"Elements: (1) Subject assigned to specific post/duty; (2) Subject left or failed to attend; (3) Absence was unauthorized."},
-    {s:"23", t:"Desertion", d:"Absence w/ intent to remain absent permanently or avoid a period of active service.", p:"Threshold: Must prove specific 'intent' (animus non revertendi). Evidence: Disposal of kit, purchase of tickets, or statements."},
-    {s:"24", t:"Absence without leave (AWOL)", d:"Absence from duty or place of duty without authority.", p:"Strict Liability: Prosecution only proves the fact of absence and lack of leave. Defense must prove 'Honest and Reasonable Mistake'."},
-    {s:"25", t:"Assaulting a superior officer", d:"Applying force or threatening a superior officer.", p:"Elements: (1) Assault; (2) Victim is superior; (3) Accused knew status. Note: 'Superior' includes those of higher rank or in command."},
-    {s:"26", t:"Insubordinate conduct", d:"Using threatening or insulting language or behaving insubordinately to a superior.", p:"Context: Includes behavior in the presence of or directed toward a superior officer."},
-    {s:"27", t:"Disobeying a lawful command", d:"Wilfully disobeying a lawful command given by a superior officer.", p:"Threshold: Command must be specific, certain, and relate to a military duty. Must not be a 'manifestly illegal' order."},
-    {s:"28", t:"Failing to comply with a general order", d:"Non-compliance with Defence Instructions (DIs) or standing orders.", p:"Proof: Existence of order + publication + non-compliance. Constructive knowledge is often applicable."},
-    {s:"29", t:"Failing to perform a duty etc.", d:"Failing to perform duty or carry out activity in a manner reasonably expected.", p:"Threshold: New/Reform section targeting general professional failures in duty performance."},
-    {s:"32", t:"Obstruction of service police", d:"Hindering or resisting a service police officer in the execution of duty.", p:"Legal Check: The SP officer must be acting within their legal authority (intra vires)."},
-    {s:"33", t:"Disorderly conduct", d:"Fighting, or using threatening, insubordinate or insulting language in a public place.", p:"Elements: Public place or within service view. Likely to prejudice good order and discipline."},
-    {s:"34", t:"Assault on person on guard duty etc.", d:"Assaulting a sentry or a member of a guard party.", p:"Aggravating Factor: Victim is actively performing security or guard duties."},
-    {s:"35", t:"Negligence in performance of a duty", d:"Performing a duty so negligently that it causes (or is likely to cause) loss of life or injury.", p:"Threshold: Requires a 'high degree of negligence'—more than a simple error of judgment."},
-    {s:"36", t:"Dangerous conduct", d:"Conduct that creates a risk of death or serious injury to another person.", p:"Mens Rea: Recklessness or negligence. Often applied in training or weapon handling incidents."},
-    {s:"36A", t:"Unauthorised discharge of weapon", d:"Discharging a weapon without authority/order.", p:"Strict Liability element: The discharge occurred without specific command or lawful excuse (e.g., self-defense)."},
-    {s:"36B", t:"Negligent discharge of weapon", d:"Discharging a weapon through negligence.", p:"Proof: Failure to follow safety protocols (e.g., 'clearing' procedures). NDs are a major discipline focus."},
-    {s:"37", t:"Intoxicated while on duty etc.", d:"Being intoxicated by alcohol or drugs while on duty.", p:"Definition: 'Intoxicated' means the person's faculties are impaired. Usually corroborated by 0.00 breath result requirement for certain duties."},
-    {s:"38", t:"Malingering", d:"Feigning or inducing sickness or disability to avoid duty.", p:"Evidence: Requires medical testimony to disprove the accused's claim of infirmity."},
-    {s:"40", t:"Driving while intoxicated", d:"Driving a service vehicle while under the influence.", p:"Section 40 covers general impairment; s40B/C cover specific blood alcohol (PCA) levels."},
-    {s:"40A", t:"Dangerous driving", d:"Driving a service vehicle in a manner dangerous to the public or persons in the vehicle.", p:"Test: Would a reasonable person view the speed or manner of driving as dangerous in the circumstances?"},
-    {s:"43", t:"Stealing and receiving", d:"Stealing service property or receiving stolen property.", p:"Note: Links to the Commonwealth Criminal Code for definitions of 'theft' and 'dishonesty'."},
-    {s:"47", t:"Dealing in or possession of prohibited drugs", d:"Possession or supply of drugs on service premises.", p:"Threshold: Possession on base is often prosecuted under s47P (Strict Liability for molecules)."},
-    {s:"60", t:"Prejudicial conduct", d:"An act or omission likely to prejudice the good order and discipline of the Defence Force.", p:"Critical: Must articulate the 'Service Connection'. How did this act harm the ADF's discipline, reputation, or effectiveness?"}
-];
-
-const powers = [
-    {s:"89", t:"Arrest without warrant", d:"Power of a service police officer to arrest a person reasonably suspected of a service offence.", p:"Requirement: Must caution immediately and state the grounds of arrest."},
-    {s:"101", t:"Search of person in custody", d:"Power to search a person who has been arrested.", p:"Scope: Search for weapons or evidence that may be concealed on the person."},
-    {s:"101W", t:"Search and Seizure", d:"General power to search premises/vehicles and seize evidence.", p:"Constraint: Requires either consent, a warrant (s101X), or emergency circumstances (s101Z)."}
+// Strictly following C2024C00861 - Compiled 11/12/2024
+const db = [
+    {s:"22", t:"Abandoning post etc.", d:"Leaving or failing to attend a post, watch, or guard.", p:"<b>Elements:</b> (1) Assignment to post; (2) Leaving/failing to attend; (3) Unauthorized. <b>Threshold:</b> Proof of specific orders for that post."},
+    {s:"23", t:"Desertion", d:"Absence from duty with intent to remain absent permanently.", p:"<b>Proof:</b> Specific intent (Mens Rea) is vital. Look for disposal of service property or purchase of one-way travel."},
+    {s:"24", t:"Absence without leave", d:"Unauthorized absence from duty or place of duty.", p:"<b>Strict Liability:</b> No proof of intent required. The fact of absence + lack of authority = offence."},
+    {s:"26", t:"Assaulting a superior officer", d:"Applying force or threatening a superior officer.", p:"<b>Note:</b> Formerly s25. Includes physical force or threatening gestures. Accused must know victim is a superior."},
+    {s:"27", t:"Insubordinate conduct", d:"Threatening or insulting language; or insubordinate behavior to a superior.", p:"<b>Threshold:</b> Must be in the presence of, or directed at, a superior officer."},
+    {s:"28", t:"Disobeying a lawful command", d:"Wilful disobedience of a specific lawful command.", p:"<b>Elements:</b> (1) Lawful command; (2) Relates to military duty; (3) Clear disobedience. Command must not be illegal."},
+    {s:"29", t:"Failing to comply with a general order", d:"Contravention of Defence Instructions (DIs) or Standing Orders.", p:"<b>Proof:</b> Constructive knowledge (order was published and available) is typically sufficient."},
+    {s:"32", t:"Obstruction of service police", d:"Hindering or resisting a service police officer in execution of duty.", p:"<b>Legal:</b> The SP must be acting within their legal powers (intra vires) for this to hold."},
+    {s:"33", t:"Disorderly conduct", d:"Fighting or using threatening/insulting language in public or service view.", p:"<b>Threshold:</b> Conduct likely to cause a breach of discipline."},
+    {s:"34", t:"Assault on person on guard duty", d:"Assaulting a sentry or guard party member.", p:"<b>Aggravation:</b> Higher penalty due to the victim's security role."},
+    {s:"35", t:"Dangerous conduct", d:"Conduct creating risk of death or serious injury.", p:"<b>Threshold:</b> Recklessness or negligence in a duty that endangers others. (Replaces old Negligence section)."},
+    {s:"36", t:"Unauthorised discharge of weapon", d:"Firing a weapon without authority/command.", p:"<b>Strict Liability:</b> Proof that the weapon was discharged without a 'fire' order."},
+    {s:"36A", t:"Negligent discharge of weapon", d:"Discharging a weapon through negligence (ND).", p:"<b>Elements:</b> Failure to follow safety protocols (e.g., clearing procedures)."},
+    {s:"37", t:"Intoxicated while on duty", d:"Impaired by alcohol or drugs while performing duty.", p:"<b>Proof:</b> Observed impairment or positive breath/blood analysis."},
+    {s:"39", t:"Dangerous driving", d:"Driving a service vehicle in a manner dangerous to the public.", p:"<b>Threshold:</b> Objective danger based on speed/manner relative to surroundings."},
+    {s:"40", t:"Driving while intoxicated", d:"Driving a service vehicle while impaired.", p:"<b>Elements:</b> Operating vehicle + under the influence of drugs/alcohol."},
+    {s:"43", t:"Stealing service property", d:"Theft of property belonging to the Commonwealth/ADF.", p:"<b>Definition:</b> Links to the Commonwealth Criminal Code for 'theft' and 'dishonesty'."},
+    {s:"47P", t:"Possession of prohibited drugs", d:"Possessing drugs on service premises.", p:"<b>Threshold:</b> Strict liability for the presence of the substance in the accused's control."},
+    {s:"52", t:"Resistance to arrest", d:"Physical resistance to a person making a lawful arrest.", p:"<b>Requirement:</b> The arrest under s89 must be lawful and the reason stated."},
+    {s:"60", t:"Prejudicial conduct", d:"Act/Omission likely to prejudice good order and discipline.", p:"<b>Critical:</b> You must clearly articulate the 'Service Connection'—how it harmed the ADF."},
+    {s:"89", t:"Arrest without warrant", c:"power", d:"SP power to arrest on reasonable suspicion of service offence.", p:"<b>Duty:</b> Must caution immediately and inform the subject of the grounds for arrest."}
 ];
 
 function nav(id) {
     document.getElementById('v-leg').classList.toggle('hidden', id !== 'leg');
-    document.getElementById('v-pow').classList.toggle('hidden', id !== 'pow');
+    document.getElementById('v-nt').classList.toggle('hidden', id !== 'nt');
     document.getElementById('t-leg').classList.toggle('active', id === 'leg');
-    document.getElementById('t-pow').classList.toggle('active', id === 'pow');
-    if (id === 'pow') renderPowers();
+    document.getElementById('t-nt').classList.toggle('active', id === 'nt');
+    if(id==='nt') renderNT();
 }
 
 function render() {
-    const q = document.getElementById('searchInp').value.toLowerCase();
+    const q = document.getElementById('si').value.toLowerCase();
     const out = document.getElementById('out');
     out.innerHTML = '';
-    offences.filter(o => o.s.includes(q) || o.t.toLowerCase().includes(q)).forEach(o => {
-        out.innerHTML += `
-            <div class="card">
-                <div class="card-h">
-                    <span>s${o.s} <span class="division-tag">DFDA 1982</span></span>
-                    <span class="badge">Offence</span>
-                </div>
-                <div class="card-b">
-                    <strong>${o.t}</strong><br>${o.d}
-                    <div class="proof-box"><strong>Threshold & Proof:</strong><br>${o.p}</div>
-                </div>
-            </div>`;
+    db.filter(x => x.s.includes(q) || x.t.toLowerCase().includes(q)).forEach(x => {
+        const isPower = x.c === 'power';
+        out.innerHTML += `<div class="card ${isPower?'power':''}">
+            <div class="card-h"><span>s${x.s}</span><span style="color:${isPower?'var(--navy)':'var(--crimson)'}">${isPower?'POWER':'OFFENCE'}</span></div>
+            <div class="card-b"><strong>${x.t}</strong><br>${x.d}<div class="proof">${x.p}</div></div>
+        </div>`;
     });
 }
 
-function renderPowers() {
-    const out = document.getElementById('pow-out');
-    out.innerHTML = '<h3>Investigative Powers (Part VI)</h3>';
-    powers.forEach(p => {
-        out.innerHTML += `
-            <div class="card" style="border-left-color: var(--navy);">
-                <div class="card-h">
-                    <span>s${p.s}</span>
-                    <span class="badge" style="background:var(--navy)">Power</span>
-                </div>
-                <div class="card-b">
-                    <strong>${p.t}</strong><br>${p.d}
-                    <div class="proof-box">${p.p}</div>
-                </div>
-            </div>`;
+function renderNT() {
+    const out = document.getElementById('nt-out');
+    out.innerHTML = '<h3>NT to ADF 1982 Cross-Ref</h3>';
+    const map = [
+        {n:"Assault (s188 CC)", a:"s26 (Assault Superior) or s30/33"},
+        {n:"Disorderly (s47 SOA)", a:"s33 (Disorderly Conduct)"},
+        {n:"Stealing (s210 CC)", a:"s43 (Stealing Service Property)"},
+        {n:"DUI (s29 Traffic Act)", a:"s40 (DUI)"}
+    ];
+    map.forEach(m => {
+        out.innerHTML += `<div style="background:#fff; padding:15px; margin-bottom:10px; border-radius:8px; border-left:4px solid var(--nt);"><strong>NT: ${m.n}</strong><br><b>DFDA 1982:</b> ${m.a}</div>`;
     });
 }
 
