@@ -101,4 +101,45 @@ const data = [
     {s:"s31", t:"Obstructing Service Police", c:"offence", d:"Resisting or hindering SP in execution of duty.", l:"<b>Elements:</b> (1) Obstruction/Resistance; (2) Victim is SP; (3) Victim in execution of duty.<br><b>Threshold:</b> SP must be acting <b class='red'>intra vires</b> (within legal power). If search/arrest is illegal, s31 fails."},
     {s:"s32", t:"Disorderly Conduct", c:"offence", d:"Fighting or threatening/insulting behavior.", l:"<b>Elements:</b> (1) Conduct occurred; (2) Likely to cause breach of discipline.<br><b>Threshold:</b> 'Breach of Discipline' is a lower bar than civilian 'Breach of Peace'. Covers conduct discrediting the service."},
     {s:"s36B", t:"Unauthorized Use (Vehicle)", c:"offence", d:"Use of service vehicle without authority.", l:"<b>Elements:</b> (1) Service vehicle; (2) Use for unauthorized purpose/trip.<br><b>Threshold:</b> Movement Orders (MO) are the primary evidence. Any deviation from MO route can constitute an offence."},
-    {s:"s40", t:"DUI", c:"offence", d:"Driving under the influence (Service Vehicle).", l:"<b>Elements:</b> (1) Driving/Operating vehicle; (2) Under influence of drug/alcohol.<br
+    {s:"s40", t:"DUI", c:"offence", d:"Driving under the influence (Service Vehicle).", l:"<b>Elements:</b> (1) Driving/Operating vehicle; (2) Under influence of drug/alcohol.<br><b>Threshold:</b> 'Incapable of proper control'. Proved via physical observations (gait, slurred speech) or breath/blood analysis."},
+    {s:"s40C", t:"Presence of Drug", c:"offence", d:"Driving with drug in system.", l:"<b>Elements:</b> (1) Operating service vehicle; (2) Prohibited drug in oral fluid/blood.<br><b>Threshold:</b> <b class='red'>STRICT LIABILITY.</b> No impairment needs to be proven. Only the presence of the molecule."},
+    {s:"s60", t:"Prejudicial Conduct", c:"offence", d:"Conduct to the prejudice of good order.", l:"<b>Elements:</b> (1) Act or omission; (2) Prejudices discipline/order OR discredits ADF.<br><b>Threshold:</b> The <b class='red'>'Service Connection'</b> must be clearly articulated in the charge report (e.g., impact on unit morale or public trust)."},
+    {s:"s89", t:"DFDA Arrest Power", c:"power", d:"Arrest without warrant for service offences.", l:"<b>Threshold:</b> 'Reasonable Belief'. Must be objective facts. Accused <b class='red'>MUST</b> be informed of the reason for arrest and cautioned immediately."},
+    {s:"Crimes s89", t:"Trespass (Cth Land)", c:"cth", d:"Entry/Remaining on Cth land without excuse.", l:"<b>Elements:</b> (1) Cth Land; (2) Subject entered/remained; (3) No lawful excuse.<br><b>Threshold:</b> Once entry is proven, the <b>Onus of Proof</b> for 'Lawful Excuse' shifts to the defendant."},
+    {s:"Crimes s89A", t:"Weapons (Cth Land)", c:"cth", d:"Possession of weapons/firearms on Cth land.", l:"<b>Elements:</b> (1) Cth Land; (2) Possession of prohibited weapon/firearm; (3) No authority.<br><b>Threshold:</b> Includes 'explosives' and 'prohibited weapons' (knives/crossbows) as defined in Cth/NT law."}
+];
+
+function nav(id) {
+    ['v-ref', 'v-nt', 'v-samdf'].forEach(v => document.getElementById(v).classList.add('hidden'));
+    document.getElementById('v-' + id).classList.remove('hidden');
+    ['t-ref', 't-nt', 't-samdf'].forEach(t => document.getElementById(t).classList.remove('active'));
+    document.getElementById('t-' + id).classList.add('active');
+}
+
+function runSearch() {
+    const q = document.getElementById('searchInp').value.toLowerCase().trim();
+    const out = document.getElementById('searchRes');
+    out.innerHTML = '';
+    data.filter(i => i.s.toLowerCase().includes(q) || i.t.toLowerCase().includes(q)).forEach(i => {
+        out.innerHTML += `<div class="card ${i.c}"><div class="card-header"><span>${i.s}</span><span class="badge bg-${i.c}">${i.c}</span></div><div class="card-body"><strong>${i.t}</strong><br>${i.d}<span class="legal-detail">${i.l}</span><textarea placeholder="Case Notes..."></textarea></div></div>`;
+    });
+}
+
+function updateNT() {
+    const v = document.getElementById('ntSel').value;
+    const res = document.getElementById('ntRes');
+    const map = {
+        's26': '<b>NT Equivalent:</b> Criminal Code s188 (Common Assault). Charge is aggravated if against a Public Officer in execution of duty.',
+        's32': '<b>NT Equivalent:</b> Summary Offences Act s47 (Disorderly Behavior). Max penalty: $2,000 or 6 months imprisonment.',
+        's37': '<b>NT Equivalent:</b> Criminal Code s210 (Stealing). Requires proof of intent to permanently deprive.',
+        's39': '<b>NT Equivalent:</b> Traffic Act s30 (Dangerous Driving). Considered a serious driving offence in the NT.',
+        's40': '<b>NT Equivalent:</b> Traffic Act s29 (DUI). NT Police use Dräger Alcotest units for evidentiary samples.',
+        'cs89': '<b>NT Equivalent:</b> Trespass Act s5. Applies if civilian enters private/base property after being warned to stay off.'
+    };
+    res.innerHTML = `<div class="nt-box">${map[v] || 'Select a section above.'}</div>`;
+}
+
+window.onload = runSearch;
+</script>
+</body>
+</html>
