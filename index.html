@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DFDA 2026 Master Suite</title>
+    <title>DFDA 1982 - Verified Field Tool</title>
     <style>
-        :root { --n: #1a3a5f; --l: #b22222; --nt: #d5763e; --c: #444; }
+        :root { --n: #1a3a5f; --l: #b22222; --nt: #d5763e; --g: #2d5a27; }
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; color: #333; }
         .h { position: sticky; top: 0; z-index: 9; background: var(--n); display: flex; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         .tab { flex: 1; padding: 15px 5px; color: #fff; text-align: center; cursor: pointer; font-size: 10px; font-weight: bold; text-transform: uppercase; border-bottom: 4px solid transparent; }
         .tab.active { border-bottom: 4px solid var(--nt); background: rgba(255,255,255,0.1); }
         .cnt { max-width: 800px; margin: auto; padding: 15px; }
         .sb { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
-        .card { background: white; margin-bottom: 12px; border-radius: 8px; overflow: hidden; border-left: 6px solid var(--n); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .off { border-left-color: var(--l); }
-        .cth { border-left-color: var(--c); }
+        .card { background: white; margin-bottom: 12px; border-radius: 8px; overflow: hidden; border-left: 6px solid var(--l); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .power { border-left-color: var(--n); }
         .card-h { padding: 10px 15px; background: #f8f9fa; font-weight: bold; display: flex; justify-content: space-between; font-size: 13px; border-bottom: 1px solid #eee; }
         .card-b { padding: 12px 15px; font-size: 13px; line-height: 1.5; }
         .proof { display: block; margin-top: 8px; padding: 10px; background: #f9f9fb; border-radius: 4px; border-left: 3px solid #ddd; font-size: 12px; }
-        .map-card { border-left: 4px solid var(--nt); background: #fff4ed; padding: 12px; margin-bottom: 10px; border-radius: 6px; }
-        .badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; color: #fff; }
+        .nt-map { border-left: 4px solid var(--nt); background: #fff4ed; padding: 12px; margin-bottom: 10px; border-radius: 6px; }
+        .badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; color: #fff; text-transform: uppercase; }
         .hidden { display: none !important; }
         b { color: var(--n); }
     </style>
@@ -27,133 +26,96 @@
 <body>
 
 <div class="h">
-    <div id="t-leg" class="tab active" onclick="nav('leg')">Legislation</div>
-    <div id="t-nt" class="tab" onclick="nav('nt')">NT -> ADF Map</div>
-    <div id="t-sam" class="tab" onclick="nav('sam')">SAMDF / DPA</div>
+    <div id="t-leg" class="tab active" onclick="nav('leg')">DFDA Offences</div>
+    <div id="t-pow" class="tab" onclick="nav('pow')">SP Powers</div>
+    <div id="t-nt" class="tab" onclick="nav('nt')">NT Referral</div>
 </div>
 
 <div class="cnt">
     <div id="v-leg">
-        <input type="text" class="sb" id="si" oninput="render()" placeholder="Search Section Number or Keyword...">
+        <input type="text" class="sb" id="si" oninput="render()" placeholder="Search Section (e.g. 24, 60, Assault)...">
         <div id="out"></div>
     </div>
-
-    <div id="v-nt" class="hidden">
-        <div id="nt-out"></div>
-    </div>
-
-    <div id="v-sam" class="hidden">
-        <div id="sam-out"></div>
-    </div>
+    <div id="v-pow" class="hidden"><div id="pow-out"></div></div>
+    <div id="v-nt" class="hidden"><div id="nt-out"></div></div>
 </div>
 
 <script>
-// COMPRESSED MASTER DATABASE
+// VERIFIED DFDA 1982 DATABASE
 const db = [
-    {s:"s22", t:"Abandoning Post", c:"off", d:"Leaving post or watch without relief.", p:"<b>Elements:</b> (1) Member on duty; (2) Left post; (3) No auth. <b>Threshold:</b> Proof of Post Orders required."},
-    {s:"s23", t:"Desertion", c:"off", d:"Absence with intent to stay away permanently.", p:"<b>Elements:</b> (1) Absent; (2) Intent to desert. <b>Threshold:</b> Intent inferred from kit disposal/length of absence."},
-    {s:"s24", t:"AWOL", c:"off", d:"Absent without leave.", p:"<b>Threshold:</b> STRICT LIABILITY. No intent required; proof of unauthorized absence is sufficient."},
-    {s:"s25", t:"Malingering", c:"off", d:"Feigning sickness to avoid duty.", p:"<b>Threshold:</b> Requires medical rebuttal of claimed symptoms vs. clinical findings."},
-    {s:"s26", t:"Assaulting Superior", c:"off", d:"Violence/threats to superior rank.", p:"<b>Elements:</b> (1) Force/threat; (2) Victim is superior; (3) Accused knew status."},
-    {s:"s27", t:"Insubordinate Conduct", c:"off", d:"Insulting language/behavior to superior.", p:"<b>Threshold:</b> Language must be heard or intended for superior; must affect discipline."},
-    {s:"s28", t:"Disobeying Command", c:"off", d:"Intentional failure to obey lawful command.", p:"<b>Threshold:</b> Command must be lawful (within power, not illegal, relates to duty)."},
-    {s:"s29", t:"General Orders", c:"off", d:"Failing to comply with standing/written orders.", p:"<b>Threshold:</b> Constructive knowledge (order was published/posted) is sufficient."},
-    {s:"s30", t:"Assault Subordinate", c:"off", d:"Superior assaulting subordinate rank.", p:"<b>Elements:</b> (1) Force/violence; (2) Rank disparity. Includes ill-treatment."},
-    {s:"s31", t:"Obstructing SP", c:"off", d:"Resisting Service Police in duty.", p:"<b>Threshold:</b> SP must be acting 'intra vires' (legal power/valid search/arrest)."},
-    {s:"s32", t:"Disorderly Conduct", c:"off", d:"Fighting or threatening/insulting behavior.", p:"<b>Threshold:</b> Conduct likely to cause breach of discipline or discredit the ADF."},
-    {s:"s33", t:"Assault Person on Duty", c:"off", d:"Assaulting sentry or guard personnel.", p:"<b>Threshold:</b> Knowledge of the victim's duty status is a required element."},
-    {s:"s33a", t:"Dangerous Weapons", c:"off", d:"Possession of weapon/explosive w/o authority.", p:"<b>Threshold:</b> Strict adherence to weapon handling/storage orders (e.g. WSOs)."},
-    {s:"s34", t:"Looting", c:"off", d:"Theft in operational/combat zones.", p:"<b>Threshold:</b> Aggravated theft due to service environment context."},
-    {s:"s35", t:"Wilful Damage", c:"off", d:"Damaging service property.", p:"<b>Elements:</b> (1) Property is Cth; (2) Intentional or Reckless damage."},
-    {s:"s36", t:"Negligent Damage", c:"off", d:"Damaging property through negligence.", p:"<b>Threshold:</b> Requires breach of a specific duty of care/Post Orders."},
-    {s:"s36A", t:"Loss of Service Property", c:"off", d:"Losing property issued for use.", p:"<b>Threshold:</b> Onus on member to account for issued serialised kit."},
-    {s:"s36B", t:"Unauth Vehicle Use", c:"off", d:"Using vehicle without Movement Order.", p:"<b>Threshold:</b> Any deviation from approved MO route can constitute an offence."},
-    {s:"s37", t:"Stealing", c:"off", d:"Theft of service property.", p:"<b>Elements:</b> (1) Appropriation; (2) Intent to permanently deprive."},
-    {s:"s38", t:"Receiving", c:"off", d:"Receiving stolen service property.", p:"<b>Threshold:</b> Must prove accused knew or believed property was stolen."},
-    {s:"s39", t:"Dangerous Driving", c:"off", d:"Driving in a dangerous manner (Service Veh).", p:"<b>Threshold:</b> Objective test: Would a reasonable driver see the act as dangerous?"},
-    {s:"s40", t:"DUI", c:"off", d:"Driving under the influence (Service Veh).", p:"<b>Threshold:</b> Incapable of proper control. Obs: gait, breath, slurred speech."},
-    {s:"s40A", t:"Breath/Blood Refusal", c:"off", d:"Refusing to provide sample to SP.", p:"<b>Threshold:</b> SP must have directed sample under s101/s102 authority."},
-    {s:"s40c", t:"Drug Presence", c:"off", d:"Driving with prohibited drug in system.", p:"<b>Threshold:</b> STRICT LIABILITY. Positive molecule = Offence."},
-    {s:"s40d", t:"Dangerous Operation", c:"off", d:"Operation of vessels/aircraft dangerously.", p:"<b>Threshold:</b> High degree of negligence relative to safety manuals."},
-    {s:"s41", t:"Assisting Enemy", c:"off", d:"Providing aid to hostile forces.", p:"<b>Threshold:</b> Mens Rea: Intent to assist or knowledge of aid's effect."},
-    {s:"s42", t:"Cowardice", c:"off", d:"Misconduct before the enemy.", p:"<b>Threshold:</b> Failure to engage/retreat when orders required action."},
-    {s:"s43", t:"Desertion to Enemy", c:"off", d:"Attempting to join hostile forces.", p:"<b>Threshold:</b> High-level intent requirement; distinct from s23."},
-    {s:"s44", t:"Capitulation", c:"off", d:"Shamefully abandoning a post/command.", p:"<b>Threshold:</b> Failure of commanding officer to maintain defense."},
-    {s:"s45", t:"Communicating with Enemy", c:"off", d:"Unauthorized contact with hostile forces.", p:"<b>Elements:</b> Communication occurred; No authorization granted."},
-    {s:"s46", t:"Mutiny", c:"off", d:"Collective insubordination/violence.", p:"<b>Threshold:</b> Requires two or more persons acting with common intent."},
-    {s:"s47p", t:"Drug Possession", c:"off", d:"Possessing prohibited drugs on base.", p:"<b>Threshold:</b> Physical control + knowledge. Cth Drug list applies."},
-    {s:"s47q", t:"Drug Trafficking", c:"off", d:"Supplying drugs on service premises.", p:"<b>Threshold:</b> Evidence of supply, exchange, or intent to sell."},
-    {s:"s48", t:"Narcotic Drugs", c:"off", d:"Use of prohibited drugs.", p:"<b>Threshold:</b> Evidence of ingestion/use; typically via drug testing (ADTP)."},
-    {s:"s49", t:"Drunkenness", c:"off", d:"Intoxicated to prejudice of duty.", p:"<b>Threshold:</b> Alcohol level or behavior prevents performance of duty."},
-    {s:"s49a", t:"Low-level DUI", c:"off", d:"Exceeding prescribed concentration (PCA).", p:"<b>Threshold:</b> Strictly based on Breath/Blood analysis results (0.00/0.05)."},
-    {s:"s50", t:"Custody Escape", c:"off", d:"Escaping from lawful service custody.", p:"<b>Threshold:</b> Custody must be legal (s89) at time of escape."},
-    {s:"s51", t:"Permitting Escape", c:"off", d:"Guard allowing prisoner to escape.", p:"<b>Threshold:</b> Wilful or negligent failure to maintain security."},
-    {s:"s52", t:"Resistance to Arrest", c:"off", d:"Active physical resistance to SP.", p:"<b>Threshold:</b> Valid s89 arrest must be in progress."},
-    {s:"s53", t:"Delay of Trial", c:"off", d:"Failing to release or process prisoner.", p:"<b>Threshold:</b> CO/Legal Officer failing to adhere to DFDA time limits."},
-    {s:"s54", t:"False Statements", c:"off", d:"Making false official statements.", p:"<b>Threshold:</b> Accused knew statement was false when made."},
-    {s:"s54a", t:"Identity Falsehood", c:"off", d:"Using false military ID/documents.", p:"<b>Elements:</b> Document is false; intent to deceive."},
-    {s:"s55", t:"Falsifying Documents", c:"off", d:"Altering logs, manifests, or records.", p:"<b>Threshold:</b> Intent to defraud or mislead service authority."},
-    {s:"s56", t:"False Accusation", c:"off", d:"Knowingly making false complaint.", p:"<b>Threshold:</b> Must prove accused knew the accusation was false."},
-    {s:"s57", t:"Scandalous Conduct", c:"off", d:"Officer behavior unbecoming status.", p:"<b>Threshold:</b> Applies to Officers/SNCOs; discredits the commission/rank."},
-    {s:"s58", t:"Bribes", c:"off", d:"Offering/taking bribes for service duty.", p:"<b>Elements:</b> (1) Benefit offered; (2) Intent to influence duty."},
-    {s:"s59", t:"Prejudicial Conduct (Lower)", c:"off", d:"Conduct harming good order.", p:"<b>Threshold:</b> Minor breaches of discipline not covered by s60."},
-    {s:"s60", t:"Prejudicial Conduct (Major)", c:"off", d:"Conduct to prejudice of good order/ADF.", p:"<b>Threshold:</b> MUST articulate the 'Service Connection' & impact on discipline."},
-    {s:"s61", t:"Civil Offences", c:"off", d:"Incorporating civilian criminal law.", p:"<b>Threshold:</b> Allows charging of State/Cth crimes under DFDA jurisdiction."},
-    {s:"s62", t:"Contempt", c:"off", d:"Contempt of a Service Tribunal.", p:"<b>Threshold:</b> Behavior in court or refusal to testify."},
-    {s:"s71q", t:"Search (Defence Act)", c:"power", d:"General search powers on base.", p:"<b>Threshold:</b> Specific authority required for area/person search."},
-    {s:"s71v", t:"Seizure Power", c:"power", d:"Power to seize prohibited items.", p:"<b>Threshold:</b> Item must be evidence of offence or safety hazard."},
-    {s:"s71w", t:"Detention Power", c:"power", d:"Detaining persons for search.", p:"<b>Threshold:</b> Limited duration; must be for security purposes."},
-    {s:"s72p", t:"Identity Demand", c:"power", d:"Requesting Name/Address in DPA.", p:"<b>Threshold:</b> Must state rank/name and give reason for demand."},
-    {s:"s73a", t:"Trespass (Def Act)", c:"power", d:"Entry into restricted areas.", p:"<b>Threshold:</b> Breach of clear signage or verbal warning."},
-    {s:"s79", t:"Arrest (Def Act)", c:"power", d:"Arrest for Defence Act offences.", p:"<b>Threshold:</b> Reasonable belief; distinct from DFDA s89."},
-    {s:"s80a", t:"Unauthorized Uniform", c:"off", d:"Civilians wearing military uniform.", p:"<b>Threshold:</b> Intent to deceive or likelihood to mislead public."},
-    {s:"s80b", t:"Military Decorations", c:"off", d:"Unauthorized use of medals/ribbons.", p:"<b>Threshold:</b> Intent to deceive; Stolen Valor provision."},
-    {s:"s82", t:"Emergency Entry", c:"power", d:"Entry into property in emergency.", p:"<b>Threshold:</b> Immediate threat to life/property or service security."},
-    {s:"s83", t:"Use of Force", c:"power", d:"Authorized use of force by SP.", p:"<b>Threshold:</b> Must be 'Reasonable and Necessary' in the circumstances."},
-    {s:"cs89", t:"Trespass (Crimes Act)", c:"cth", d:"Federal trespass on Cth land.", p:"<b>Threshold:</b> Onus of proof for 'Lawful Excuse' is on the defendant."},
-    {s:"cs89a", t:"Weapons (Crimes Act)", c:"cth", d:"Weapons on Cth land.", p:"<b>Threshold:</b> Federal offence; strict control of civilian items on base."}
-];
-
-const ntMap = [
-    {n:"Assault (s188 CC)", a:"s26/s30/s33", d:"NT law leads; ADF uses rank-specific sections."},
-    {n:"Disorderly (s47 SOA)", a:"s32", d:"Standard for public disturbances or brawls."},
-    {n:"Stealing (s210 CC)", a:"s37", d:"Use ADF s37 for Service Property only."},
-    {n:"DUI (s29 Traffic Act)", a:"s40", d:"Use ADF for Service Vehicles; NT Police for civilian veh."},
-    {n:"Trespass (s5 Trespass Act)", a:"Crimes s89", d:"Crimes Act s89 is preferred on Cth land."}
+    {s:"15", t:"Reporting for Duty", c:"off", d:"Failing to report for duty/movement.", p:"<b>Elements:</b> (1) Requirement to report; (2) Knowledge of time/place; (3) Failed to report."},
+    {s:"22", t:"Abandoning Post", c:"off", d:"Leaving post or watch w/o relief.", p:"<b>Elements:</b> (1) Assigned to post; (2) Left post; (3) Without relief. <b>Context:</b> Often used for Sentry/Guard breaches."},
+    {s:"23", t:"Desertion", c:"off", d:"Absence with intent to remain absent permanently.", p:"<b>Proof:</b> Must prove specific intent to never return or avoid sensitive service."},
+    {s:"24", t:"AWOL", c:"off", d:"Absence without leave.", p:"<b>Strict Liability:</b> Only need to prove the member was absent and it was unauthorized. Intent is not required."},
+    {s:"25", t:"Malingering", c:"off", d:"Feigning or inducing sickness/disability.", p:"<b>Elements:</b> (1) Feigned/induced infirmity; (2) Intent to avoid duty."},
+    {s:"26", t:"Assault on Superior", c:"off", d:"Violence or threats to superior officer.", p:"<b>Elements:</b> (1) Force/threat; (2) To superior; (3) Knowledge of status. <b>Superior:</b> Includes rank or appointment."},
+    {s:"27", t:"Insubordinate Conduct", c:"off", d:"Threatening/insulting language to superior.", p:"<b>Proof:</b> Language must be heard by superior or intended for them."},
+    {s:"28", t:"Disobeying Lawful Command", c:"off", d:"Failure to obey a specific, lawful command.", p:"<b>Threshold:</b> Command must relate to military duty and not be illegal."},
+    {s:"29", t:"Failing to Comply w/ Orders", c:"off", d:"Breaching General/Standing orders.", p:"<b>Threshold:</b> Constructive knowledge (noticeboard/DI) is sufficient for proof."},
+    {s:"30", t:"Assault on Subordinate", c:"off", d:"Superior assaulting or ill-treating subordinate.", p:"<b>Context:</b> Protective provision for junior members."},
+    {s:"31", t:"Obstruction of SP", c:"off", d:"Hindering SP in execution of duty.", p:"<b>Threshold:</b> SP must be acting legally (Intra Vires)."},
+    {s:"32", t:"Disorderly Conduct", c:"off", d:"Fighting or threatening behavior.", p:"<b>Context:</b> Likely to prejudice good order and discipline."},
+    {s:"33", t:"Assault on Sentry", c:"off", d:"Assaulting person on guard/duty.", p:"<b>Elements:</b> Victim must be on duty; status must be known to accused."},
+    {s:"33A", t:"Dangerous Weapons", c:"off", d:"Unauthorized possession/use of weapons.", p:"<b>Threshold:</b> Covers firearms, ammunition, and explosives."},
+    {s:"34", t:"Looting", c:"off", d:"Theft in combat or disaster areas.", p:"<b>Context:</b> Operational environments increase the penalty."},
+    {s:"35", t:"Wilful Damage", c:"off", d:"Intentionally damaging Service property.", p:"<b>Proof:</b> Property must be Cth-owned or Service-controlled."},
+    {s:"36", t:"Negligent Damage", c:"off", d:"Damaging property via negligence.", p:"<b>Threshold:</b> Breach of specific duty of care/orders."},
+    {s:"36A", t:"Loss of Service Property", c:"off", d:"Losing issued kit/property.", p:"<b>Threshold:</b> Onus of accounting for kit is on the member."},
+    {s:"36B", t:"Unauthorized Use (Vehicle)", c:"off", d:"Using vehicle without Movement Order.", p:"<b>Threshold:</b> Deviation from route = Unauthorized use."},
+    {s:"37", t:"Stealing", c:"off", d:"Theft of Service property.", p:"<b>Elements:</b> (1) Appropriation; (2) Intent to permanently deprive."},
+    {s:"38", t:"Receiving", c:"off", d:"Receiving stolen service property.", p:"<b>Proof:</b> Accused knew/believed property was stolen."},
+    {s:"39", t:"Dangerous Driving", c:"off", d:"Driving dangerously (Service Veh).", p:"<b>Threshold:</b> Objective test of danger to the public/passengers."},
+    {s:"40", t:"DUI", c:"off", d:"Impaired driving (Service Veh).", p:"<b>Threshold:</b> 'Incapable of proper control' via alcohol or drugs."},
+    {s:"40C", t:"Presence of Drug", c:"off", d:"Driving with drug in system.", p:"<b>Strict Liability:</b> Positive molecule result is an offence."},
+    {s:"47P", t:"Possession of Drugs", c:"off", d:"Possessing drugs on Service premises.", p:"<b>Threshold:</b> Physical control + prohibited status."},
+    {s:"48", t:"Narcotic Drugs", c:"off", d:"Use of prohibited drugs.", p:"<b>Threshold:</b> Confirmed via ADTP testing (Urine/Saliva)."},
+    {s:"49", t:"Drunkenness", c:"off", d:"Intoxicated to prejudice of duty.", p:"<b>Threshold:</b> Incapable of performing duty or discredits ADF."},
+    {s:"52", t:"Resistance to Arrest", c:"off", d:"Physical resistance to lawful arrest.", p:"<b>Threshold:</b> Valid s89 arrest must be in progress."},
+    {s:"54", t:"False Statements", c:"off", d:"Making false official statements.", p:"<b>Threshold:</b> Accused knew statement was false at the time."},
+    {s:"60", t:"Prejudicial Conduct", c:"off", d:"Conduct harming good order/discipline.", p:"<b>Threshold:</b> Must articulate 'Service Connection' and impact."},
+    {s:"61", t:"Civil Offences", c:"off", d:"Criminal offences under civilian law.", p:"<b>Jurisdiction:</b> Allows DFDA to charge crimes against State/Cth law."},
+    {s:"89", t:"Arrest Power", c:"pow", d:"Arrest without warrant.", p:"<b>Threshold:</b> Reasonable belief. Caution and grounds must be stated."},
+    {s:"101", t:"Search Power", c:"pow", d:"Power to search persons.", p:"<b>Threshold:</b> Requires reasonable suspicion of offence evidence."},
+    {s:"101A", t:"Search Vehicles", c:"pow", d:"Power to search Service vehicles.", p:"<b>Threshold:</b> Incident to duty or specific suspicion."}
 ];
 
 function nav(id) {
-    ['v-leg', 'v-nt', 'v-sam'].forEach(v => document.getElementById(v).classList.add('hidden'));
-    ['t-leg', 't-nt', 't-sam'].forEach(t => document.getElementById(t).classList.remove('active'));
+    ['v-leg', 'v-pow', 'v-nt'].forEach(v => document.getElementById(v).classList.add('hidden'));
+    ['t-leg', 't-pow', 't-nt'].forEach(t => document.getElementById(t).classList.remove('active'));
     document.getElementById('v-'+id).classList.remove('hidden');
     document.getElementById('t-'+id).classList.add('active');
+    if(id==='pow') renderPow();
     if(id==='nt') renderNT();
-    if(id==='sam') renderSAM();
 }
 
 function render() {
     const q = document.getElementById('si').value.toLowerCase();
     const out = document.getElementById('out');
     out.innerHTML = '';
-    db.filter(x => x.s.toLowerCase().includes(q) || x.t.toLowerCase().includes(q)).forEach(x => {
-        const badge = x.c==='off'?'bg-l':(x.c==='cth'?'bg-c':'bg-n');
-        out.innerHTML += `<div class="card ${x.c==='off'?'off':(x.c==='cth'?'cth':'')}"><div class="card-h"><span>${x.s}</span><span class="badge" style="background:var(--${x.c==='off'?'l':(x.c==='cth'?'c':'n')})">${x.c.toUpperCase()}</span></div><div class="card-b"><b>${x.t}</b><br>${x.d}<div class="proof">${x.p}</div><textarea placeholder="Field notes..." style="width:100%; margin-top:10px; border:1px solid #ddd; border-radius:4px; padding:5px; font-size:12px;"></textarea></div></div>`;
+    db.filter(x => (x.s.toLowerCase().includes(q) || x.t.toLowerCase().includes(q)) && x.c === 'off').forEach(x => {
+        out.innerHTML += `<div class="card"><div class="card-h"><span>s${x.s}</span><span class="badge" style="background:var(--l)">Offence</span></div><div class="card-b"><b>${x.t}</b><br>${x.d}<div class="proof">${x.p}</div></div></div>`;
+    });
+}
+
+function renderPow() {
+    const out = document.getElementById('pow-out');
+    out.innerHTML = '<h3>Service Police Powers (DFDA 1982)</h3>';
+    db.filter(x => x.c === 'pow').forEach(x => {
+        out.innerHTML += `<div class="card power"><div class="card-h"><span>s${x.s}</span><span class="badge" style="background:var(--n)">Power</span></div><div class="card-b"><b>${x.t}</b><br>${x.d}<div class="proof">${x.p}</div></div></div>`;
     });
 }
 
 function renderNT() {
     const out = document.getElementById('nt-out');
-    out.innerHTML = '<h3>NT -> ADF Reference</h3>';
-    ntMap.forEach(m => {
-        out.innerHTML += `<div class="map-card"><strong>NT: ${m.n}</strong><br><b>ADF Equiv:</b> ${m.a}<br><small>${m.d}</small></div>`;
-    });
-}
-
-function renderSAM() {
-    const out = document.getElementById('sam-out');
-    out.innerHTML = '<h3>DPA / SAMDF Authority</h3>';
-    db.filter(x => x.c === 'power').forEach(x => {
-        out.innerHTML += `<div class="card" style="border-left-color:var(--n)"><div class="card-h"><span>${x.s}</span></div><div class="card-b"><b>${x.t}</b><br>${x.d}<div class="proof">${x.p}</div></div></div>`;
+    out.innerHTML = '<h3>NT Referral Mapping</h3>';
+    const mapping = [
+        {n:"Assault (s188 CC)", a:"s26 (Superior) or s30 (Subord)"},
+        {n:"Disorderly (s47 SOA)", a:"s32 (Disorderly)"},
+        {n:"Stealing (s210 CC)", a:"s37 (Stealing)"},
+        {n:"DUI (s29 Traffic Act)", a:"s40 (DUI)"}
+    ];
+    mapping.forEach(m => {
+        out.innerHTML += `<div class="nt-map"><strong>NT: ${m.n}</strong><br><b>DFDA 1982:</b> ${m.a}</div>`;
     });
 }
 
