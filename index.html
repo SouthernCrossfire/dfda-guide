@@ -3,156 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DFDA Field Pro - 2026 Full Suite</title>
+    <title>DFDA & Crimes Act - Triple Pillar Build</title>
     <style>
-        :root { --army: #4b5320; --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --cth: #444; }
+        :root { --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --cth: #444; --power: #2c3e50; }
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
-        .header-nav { position: sticky; top: 0; z-index: 999; background: var(--navy); box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .tab-bar { display: flex; overflow-x: auto; white-space: nowrap; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .tab { flex: 0 0 auto; padding: 14px 20px; text-align: center; color: #fff; cursor: pointer; font-weight: bold; font-size: 10px; border-bottom: 4px solid transparent; text-transform: uppercase; }
+        .header-nav { position: sticky; top: 0; z-index: 999; background: var(--navy); }
+        .tab-bar { display: flex; }
+        .tab { flex: 1; padding: 16px 5px; text-align: center; color: #fff; cursor: pointer; font-weight: bold; font-size: 12px; border-bottom: 4px solid transparent; text-transform: uppercase; }
         .tab.active { border-bottom: 4px solid var(--nt); background: rgba(255,255,255,0.1); }
-        .container { max-width: 700px; margin: auto; padding: 15px; padding-bottom: 80px; }
-        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; display: block; }
-        .card { background: white; margin-bottom: 15px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--army); }
+        .container { max-width: 750px; margin: auto; padding: 15px; padding-bottom: 80px; }
+        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
+        .card { background: white; margin-bottom: 15px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--navy); }
         .card.offence { border-left-color: var(--law); }
-        .card.power { border-left-color: var(--navy); }
         .card.cth { border-left-color: var(--cth); }
-        .card-header { padding: 12px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; font-weight: bold; color: var(--navy); display: flex; justify-content: space-between; }
-        .card-body { padding: 15px; font-size: 13px; line-height: 1.5; color: #333; }
-        .legal-detail { color: #222; font-size: 12px; margin-top: 10px; display: block; border-top: 2px solid #eee; padding-top: 10px; background: #fcfcfc; padding: 12px; border-radius: 4px; }
+        .card.power { border-left-color: var(--power); }
+        .card-header { padding: 12px 15px; background: #f8f9fa; font-weight: bold; color: var(--navy); display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 15px; font-size: 13px; line-height: 1.6; color: #333; }
+        .legal-detail { color: #111; font-size: 12px; margin-top: 10px; display: block; border-top: 2px solid #eee; padding-top: 12px; background: #fdfdfd; padding: 12px; border-radius: 4px; border: 1px solid #eee; }
         .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt); margin-top: 10px; }
-        .log-box { background: #1a1a1a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #00ff00; white-space: pre-wrap; border: 1px solid #333; }
-        .badge { color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; text-transform: uppercase; }
+        .badge { color: white; padding: 3px 10px; border-radius: 12px; font-size: 10px; text-transform: uppercase; }
         .bg-offence { background: var(--law); }
-        .bg-power { background: var(--navy); }
+        .bg-power { background: var(--power); }
         .bg-cth { background: var(--cth); }
-        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; }
+        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; font-family: inherit; }
         .hidden { display: none !important; }
-        .btn { background: var(--navy); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%; }
+        b.red { color: var(--law); }
     </style>
 </head>
 <body>
 
 <div class="header-nav"><div class="tab-bar">
-    <div id="t-ref" class="tab active" onclick="nav('ref')">LEGISLATION</div>
-    <div id="t-nt" class="tab" onclick="nav('nt')">NT POLICE</div>
-    <div id="t-samdf" class="tab" onclick="nav('samdf')">SAMDF</div>
-    <div id="t-wep" class="tab" onclick="nav('wep')">NT WEAPONS</div>
-    <div id="t-log" class="tab" onclick="nav('log')">LOGS</div>
+    <div id="t-ref" class="tab active" onclick="nav('ref')">Legislation (Full)</div>
+    <div id="t-nt" class="tab" onclick="nav('nt')">NT Equivalents</div>
+    <div id="t-samdf" class="tab" onclick="nav('samdf')">SAMDF/DPA</div>
 </div></div>
 
 <div class="container">
     <div id="v-ref">
-        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Section (s24, Crimes s89)...">
+        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search Sections (s22-s89A, Crimes Act)...">
         <div id="searchRes"></div>
     </div>
 
     <div id="v-nt" class="hidden">
-        <select class="select-input" id="ntSel" onchange="updateNT()">
-            <option value="">Select DFDA for NT Equivalent...</option>
-            <option value="s24">s24 AWOL -> No Direct Civil Equiv</option>
-            <option value="s26">s26 Assault Superior -> s188 CC(NT)</option>
-            <option value="s32">s32 Disorderly -> s47 Summary Offences Act</option>
-            <option value="s37">s37 Stealing -> s210 CC(NT)</option>
-            <option value="s40">s40 DUI -> s29 Traffic Act (NT)</option>
-        </select>
-        <div id="ntRes"></div>
-    </div>
-
-    <div id="v-samdf" class="hidden">
-        <div class="card power">
-            <div class="card-header">SAMDF Search Powers (DPA)</div>
+        <div class="card">
+            <div class="card-header">NT Police Jurisdiction Referral</div>
             <div class="card-body">
-                <b>Authority:</b> Defence Act 1903, Part VIA.<br>
-                <b>s72P:</b> Request ID and reason for presence in DPA.<br>
-                <b>s72R:</b> Search person/vehicle on entry/exit of DPA.<br>
-                <div class="nt-box"><b>THRESHOLD:</b> Reasonable suspicion of threat to safety or security of Defence property.</div>
+                <p>Use this for handovers to NT Police or determining civilian charge equivalents for incidents involving civilians on or near base.</p>
+                <select class="select-input" id="ntSel" onchange="updateNT()">
+                    <option value="">-- Select DFDA/Crimes Act Section --</option>
+                    <option value="s26">s26 Assaulting Superior -> NT CC s188</option>
+                    <option value="s32">s32 Disorderly -> NT SOA s47</option>
+                    <option value="s37">s37 Stealing -> NT CC s210</option>
+                    <option value="s39">s39 Dangerous Driving -> NT Traffic Act s30</option>
+                    <option value="s40">s40 DUI -> NT Traffic Act s29</option>
+                    <option value="cs89">Crimes s89 Trespass -> NT Trespass Act s5</option>
+                </select>
+                <div id="ntRes"></div>
             </div>
         </div>
     </div>
 
-    <div id="v-wep" class="hidden">
-        <select class="select-input" id="wepSel" onchange="updateWep()">
-            <option value="">Select Category...</option>
-            <option value="cat-a">Category A (Air Rifle/Rimfire)</option>
-            <option value="cat-h">Category H (Handguns)</option>
-            <option value="pro">Prohibited (Crossbows/Silencers)</option>
-        </select>
-        <div id="wepRes"></div>
-    </div>
-
-    <div id="v-log" class="hidden">
-        <div class="card">
+    <div id="v-samdf" class="hidden">
+        <div class="card power">
+            <div class="card-header">SAMDF / DPA Powers (Part VIA)</div>
             <div class="card-body">
-                <button class="btn" onclick="genLog('Arrest')">Generate Arrest Template</button>
-                <button class="btn" onclick="genLog('Search')">Generate Search Template</button>
-                <div id="logOut" class="log-box" style="margin-top:15px;">Templates will appear here...</div>
+                <h3>s72P: Identity and Purpose</h3>
+                <b>Power:</b> Request full name, residential address, and reason for presence.<br>
+                <b>Applies to:</b> Any person in or near a Defence Practice Area (DPA).<br>
+                <b>Threshold:</b> Reasonable belief that person is about to commit/has committed an offence against Part VIA.
+                
+                <hr>
+                
+                <h3>s72R: Search of Persons/Vehicles</h3>
+                <b>Power:</b> Search person, clothing, and any vehicle under their control.<br>
+                <b>Threshold:</b> Necessary for the purpose of safety or security of the DPA.<br>
+                <div class="nt-box"><b>NOTE:</b> If person refuses search, they may be prohibited from entering or ordered to leave the DPA immediately (s72S).</div>
+                
+                <hr>
+
+                <h3>s89A Crimes Act: Arrest of Trespassers</h3>
+                <b>Power:</b> Arrest without warrant any person found trespassing on Cth land.<br>
+                <b>Duty:</b> Deliver to a "Constable" (NT Police) as soon as practicable.
             </div>
         </div>
     </div>
 </div>
 
 <script>
-// COMPLETE DATABASE RESTORED
 const data = [
-    {s:"s22", title:"Abandoning Post", cat:"offence", desc:"Leaving a post without relief.", legal:"<b>ELEMENTS:</b> (1) Person on duty; (2) Left post; (3) Without relief/orders. <br><b>THRESHOLD:</b> Presence of enemy increases penalty. Requires proof of specific orders."},
-    {s:"s23", title:"Desertion", cat:"offence", desc:"Absence with intent to stay away permanently.", legal:"<b>ELEMENTS:</b> (1) Absence; (2) Intent to remain absent permanently. <br><b>THRESHOLD:</b> Proved by disposal of kit or prolonged duration."},
-    {s:"s24", title:"AWOL", cat:"offence", desc:"Absence without leave.", legal:"<b>ELEMENTS:</b> (1) Absence; (2) Unauthorized. <br><b>THRESHOLD:</b> Strict Liability. Duty place/time must be clearly established."},
-    {s:"s26", title:"Assaulting Superior", cat:"offence", desc:"Assault on a superior officer.", legal:"<b>ELEMENTS:</b> (1) Violence; (2) Victim is superior; (3) Knowledge of rank. <br><b>THRESHOLD:</b> Superior must be in execution of duty for higher penalty."},
-    {s:"s28", title:"Disobeying Command", cat:"offence", desc:"Disobeying a lawful command.", legal:"<b>ELEMENTS:</b> (1) Lawful command; (2) Specific/Clear; (3) Intentional disobedience. <br><b>THRESHOLD:</b> Command must relate to military duty and not be illegal."},
-    {s:"s31", title:"Obstructing Service Police", cat:"offence", desc:"Resisting Service Police.", legal:"<b>ELEMENTS:</b> (1) Hindrance; (2) SP in execution of duty; (3) Knowledge of status. <br><b>THRESHOLD:</b> SP must be acting within lawful powers (e.g., s101 search)."},
-    {s:"s37", title:"Stealing Property", cat:"offence", desc:"Theft of service property.", legal:"<b>ELEMENTS:</b> (1) Dishonest appropriation; (2) Intent to permanently deprive. <br><b>THRESHOLD:</b> Property must be Cth/Service owned."},
-    {s:"s40", title:"DUI", cat:"offence", desc:"Impaired driving (Service Vehicle).", legal:"<b>ELEMENTS:</b> (1) Service vehicle; (2) Impaired by alcohol/drug. <br><b>THRESHOLD:</b> 'Incapable of proper control' - proved by breath/blood or physical obs."},
-    {s:"s40C", title:"Presence of Drug", cat:"offence", desc:"Driving with drug in system.", legal:"<b>ELEMENTS:</b> (1) Service vehicle; (2) Drug in oral fluid/blood. <br><b>THRESHOLD:</b> Strict Liability. Presence = Offence."},
-    {s:"s60", title:"Prejudicial Conduct", cat:"offence", desc:"Conduct to prejudice of good order.", legal:"<b>ELEMENTS:</b> (1) Act/Omission; (2) Prejudices discipline or discredits ADF. <br><b>THRESHOLD:</b> Must articulate 'Service Connection'."},
-    {s:"s89", title:"DFDA Arrest", cat:"power", desc:"Arrest without warrant.", legal:"<b>THRESHOLD:</b> 'Reasonable Belief'. Must inform subject of reason immediately (Caution)."},
-    {s:"Crimes Act s89", title:"Trespass (Cth Land)", cat:"cth", desc:"Unlawful entry to Cth land.", legal:"<b>ELEMENTS:</b> (1) Cth Land; (2) Entry/Remain; (3) No lawful excuse. <br><b>THRESHOLD:</b> Lawful excuse is a defense for the accused to prove."},
-    {s:"Crimes Act s89A", title:"Weapons (Cth Land)", cat:"cth", desc:"Possession of weapons on Cth land.", legal:"<b>ELEMENTS:</b> (1) Cth land; (2) Weapon; (3) No authority. <br><b>THRESHOLD:</b> Applies to firearms, explosives, and prohibited weapons."}
-    // ... all other 50+ requested sections follow this pattern in logic ...
-];
-
-function nav(id) {
-    ['v-ref', 'v-nt', 'v-samdf', 'v-wep', 'v-log'].forEach(v => document.getElementById(v).classList.add('hidden'));
-    document.getElementById('v-' + id).classList.remove('hidden');
-    ['t-ref', 't-nt', 't-samdf', 't-wep', 't-log'].forEach(t => document.getElementById(t).classList.remove('active'));
-    document.getElementById('t-' + id).classList.add('active');
-}
-
-function runSearch() {
-    const q = document.getElementById('searchInp').value.toLowerCase().trim();
-    const out = document.getElementById('searchRes');
-    out.innerHTML = '';
-    data.filter(i => i.s.toLowerCase().includes(q) || i.title.toLowerCase().includes(q))
-        .forEach(i => {
-            const noteVal = localStorage.getItem('n-'+i.s) || '';
-            const bc = i.cat === 'offence' ? 'bg-offence' : (i.cat === 'power' ? 'bg-power' : 'bg-cth');
-            out.innerHTML += `<div class="card"><div class="card-header"><span>${i.s}</span><span class="badge ${bc}">${i.cat}</span></div><div class="card-body"><strong>${i.title}</strong><br>${i.desc}<span class="legal-detail">${i.legal}</span><textarea oninput="localStorage.setItem('n-${i.s}', this.value)">${noteVal}</textarea></div></div>`;
-        });
-}
-
-function updateNT() {
-    const val = document.getElementById('ntSel').value;
-    const res = document.getElementById('ntRes');
-    if(val === 's40') res.innerHTML = `<div class="nt-box"><b>NT Traffic Act s29:</b> DUI. SPs should hand over to NT Police for evidentiary breath analysis if civilian vehicle or public road is involved.</div>`;
-    else if(val === 's26') res.innerHTML = `<div class="nt-box"><b>CC(NT) s188:</b> Common Assault. Aggravated if victim is a public officer.</div>`;
-    else res.innerHTML = `<div class="nt-box">No direct equivalent. Proceed under DFDA or Crimes Act (Cth).</div>`;
-}
-
-function updateWep() {
-    const val = document.getElementById('wepSel').value;
-    const res = document.getElementById('wepRes');
-    if(val === 'pro') res.innerHTML = `<div class="nt-box"><b>NT Schedule 2:</b> Crossbows, silencers, and flick knives are PROHIBITED. Requires Commissioner permit.</div>`;
-    else res.innerHTML = `<div class="nt-box">Requires NT Firearms License. Storage must comply with NT Firearms Act Schedule 3.</div>`;
-}
-
-function genLog(type) {
-    const time = new Date().toLocaleString();
-    const out = document.getElementById('logOut');
-    if(type === 'Arrest') out.innerText = `[${time}] ARREST LOG:\nSUBJECT:\nRANK/PMKEY:\nSECTION: s89 DFDA\nGROUNDS: Reasonable belief that...\nCAUTION GIVEN: Y/N\nTIME OF ARREST:`;
-    else out.innerText = `[${time}] SEARCH LOG:\nLOCATION:\nAUTHORITY: s101 / s73A\nITEMS SEIZED:\nOFFICER:`;
-}
-
-window.onload = runSearch;
-</script>
-</body>
-</html>
+    {s:"s22", t:"Abandoning Post", c:"offence", d:"Leaving a post, watch, or station before being regularly relieved.", l:"<b>Elements:</b> (1) Person assigned to specific duty; (2) Left that duty; (3) No lawful authority/relief.<br><b>Threshold:</b> 'Regularly Relieved' requires strict adherence to Post Orders. Negligence is sufficient for Actus Reus."},
+    {s:"s23", t:"Desertion", c:"offence", d:"Absence with intent to stay away permanently or avoid service.", l:"<b>Elements:</b> (1) Absence from duty; (2) Specific mental intent (Mens Rea) to never return.<br><b>Threshold:</b> Proved by: (A) Disposal of uniform/kit; (B) Long duration; (C) Direct statements of intent."},
+    {s:"s24", t:"AWOL", c:"offence", d:"Absence without leave from place of duty.", l:"<b>Elements:</b> (1) Member was absent; (2) Absence was unauthorized.<br><b>Threshold:</b> <b class='red'>STRICT LIABILITY.</b> Prosecution does not need to prove intent. Only defense is 'Honest/Reasonable Mistake of Fact'."},
+    {s:"s25", t:"Malingering", c:"offence", d:"Feigning illness or disability to avoid duty.", l:"<b>Elements:</b> (1) Subject feigned or induced infirmity; (2) Intent to avoid duty.<br><b>Threshold:</b> Requires medical testimony to contrast claimed symptoms against clinical findings."},
+    {s:"s26", t:"Assaulting Superior", c:"offence", d:"Use of violence or threats against a superior officer.", l:"<b>Elements:</b> (1) Use of force or threat; (2) Victim is superior in rank/appointment; (3) Accused knew of status.<br><b>Threshold:</b> 'Superior' includes those of higher rank OR those with command authority regardless of rank."},
+    {s:"s28", t:"Disobeying Command", c:"offence", d:"Intentional disobedience of a lawful command.", l:"<b>Elements:</b> (1) Lawful command given; (2) Command was clear/specific; (3) Intentional failure to obey.<br><b>Threshold:</b> A command is 'Lawful' if it is not illegal, is within the giver's power, and relates to military service."},
+    {s:"s29", t:"Failing to Comply (Orders)", c:"offence", d:"Contravention of General/Standing Orders.", l:"<b>Elements:</b> (1) Order exists; (2) Accused knew (or should have known) of order; (3) Act/Omission in breach.<br><b>Threshold:</b> Constructive knowledge (noticeboard/DI) is usually sufficient for proof."},
+    {s:"s31", t:"Obstructing Service Police", c:"offence", d:"Resisting or hindering SP in execution of duty.", l:"<b>Elements:</b> (1) Obstruction/Resistance; (2) Victim is SP; (3) Victim in execution of duty.<br><b>Threshold:</b> SP must be acting <b class='red'>intra vires</b> (within legal power). If search/arrest is illegal, s31 fails."},
+    {s:"s32", t:"Disorderly Conduct", c:"offence", d:"Fighting or threatening/insulting behavior.", l:"<b>Elements:</b> (1) Conduct occurred; (2) Likely to cause breach of discipline.<br><b>Threshold:</b> 'Breach of Discipline' is a lower bar than civilian 'Breach of Peace'. Covers conduct discrediting the service."},
+    {s:"s36B", t:"Unauthorized Use (Vehicle)", c:"offence", d:"Use of service vehicle without authority.", l:"<b>Elements:</b> (1) Service vehicle; (2) Use for unauthorized purpose/trip.<br><b>Threshold:</b> Movement Orders (MO) are the primary evidence. Any deviation from MO route can constitute an offence."},
+    {s:"s40", t:"DUI", c:"offence", d:"Driving under the influence (Service Vehicle).", l:"<b>Elements:</b> (1) Driving/Operating vehicle; (2) Under influence of drug/alcohol.<br
