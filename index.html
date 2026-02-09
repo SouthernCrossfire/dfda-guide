@@ -3,118 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DFDA & NT Pro - Integrated Suite</title>
+    <title>DFDA High-Density Pro</title>
     <style>
         :root { --navy: #1a3a5f; --law: #b22222; --nt: #d5763e; --cth: #444; }
-        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
-        .header-nav { position: sticky; top: 0; z-index: 999; background: var(--navy); }
-        .tab-bar { display: flex; }
-        .tab { flex: 1; padding: 16px 5px; text-align: center; color: #fff; cursor: pointer; font-weight: bold; font-size: 11px; border-bottom: 4px solid transparent; text-transform: uppercase; }
+        body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; padding: 0; color: #333; }
+        .header { position: sticky; top: 0; z-index: 9; background: var(--navy); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .nav { display: flex; }
+        .tab { flex: 1; padding: 15px 5px; color: #fff; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; border-bottom: 4px solid transparent; }
         .tab.active { border-bottom: 4px solid var(--nt); background: rgba(255,255,255,0.1); }
-        .container { max-width: 750px; margin: auto; padding: 15px; padding-bottom: 80px; }
-        .search-box, .select-input { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
-        .card { background: white; margin-bottom: 15px; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-left: 8px solid var(--navy); }
+        .container { max-width: 700px; margin: auto; padding: 15px; }
+        .search-box { width: 100%; padding: 15px; border: 2px solid #ccc; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
+        .card { background: white; margin-bottom: 12px; border-radius: 8px; overflow: hidden; border-left: 6px solid var(--navy); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .card.offence { border-left-color: var(--law); }
         .card.cth { border-left-color: var(--cth); }
-        .card-header { padding: 12px 15px; background: #f8f9fa; font-weight: bold; color: var(--navy); display: flex; justify-content: space-between; align-items: center; }
-        .card-body { padding: 15px; font-size: 13px; line-height: 1.6; }
-        .legal-detail { color: #111; font-size: 12.5px; margin-top: 10px; display: block; border-top: 1px solid #eee; padding: 12px; background: #f9f9f9; border-radius: 4px; }
-        .nt-box { background: #fff4ed; padding: 15px; border-radius: 8px; border: 1px solid var(--nt); margin-top: 10px; border-left: 5px solid var(--nt); }
-        .badge { color: white; padding: 3px 10px; border-radius: 12px; font-size: 10px; text-transform: uppercase; }
-        .bg-offence { background: var(--law); }
-        .bg-power { background: var(--navy); }
-        .bg-cth { background: var(--cth); }
-        textarea { width: 100%; margin-top: 10px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; background: #fffdf0; box-sizing: border-box; }
+        .card-h { padding: 10px 15px; background: #f8f9fa; font-weight: bold; display: flex; justify-content: space-between; font-size: 14px; }
+        .card-b { padding: 15px; font-size: 13px; line-height: 1.5; }
+        .proof { display: block; margin-top: 10px; padding: 10px; background: #fdfdfd; border: 1px solid #eee; border-radius: 4px; color: #000; }
+        .nt-map { border-left: 4px solid var(--nt); background: #fff4ed; padding: 10px; margin-top: 5px; }
+        .badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; color: #fff; text-transform: uppercase; }
         .hidden { display: none !important; }
-        h4 { margin: 0 0 10px 0; color: var(--nt); text-transform: uppercase; font-size: 12px; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 10px 0; }
     </style>
 </head>
 <body>
 
-<div class="header-nav"><div class="tab-bar">
-    <div id="t-nt" class="tab active" onclick="nav('nt')">NT -> ADF Mapping</div>
-    <div id="t-ref" class="tab" onclick="nav('ref')">Legislation Detail</div>
-    <div id="t-samdf" class="tab" onclick="nav('samdf')">SAMDF Powers</div>
-</div></div>
+<div class="header">
+    <div class="nav">
+        <div id="t-leg" class="tab active" onclick="nav('leg')">Legislation</div>
+        <div id="t-map" class="tab" onclick="nav('map')">NT Mapping</div>
+        <div id="t-sam" class="tab" onclick="nav('sam')">SAMDF</div>
+    </div>
+</div>
 
 <div class="container">
-    <div id="v-nt">
-        <select class="select-input" id="ntSel" onchange="updateNT()">
-            <option value="">-- Select NT Offence --</option>
-            <option value="assault">Common Assault (NT CC s188)</option>
-            <option value="disorderly">Disorderly Conduct (NT SOA s47)</option>
-            <option value="stealing">Stealing (NT CC s210)</option>
-            <option value="dui">DUI (NT Traffic Act s29)</option>
-            <option value="drugs">Drug Possession (NT MDA s12)</option>
-            <option value="trespass">Trespass (NT Trespass Act s5)</option>
-        </select>
-        <div id="ntRes"></div>
+    <div id="v-leg">
+        <input type="text" class="search-box" id="si" oninput="render()" placeholder="Search DFDA or Crimes Act...">
+        <div id="out"></div>
     </div>
 
-    <div id="v-ref" class="hidden">
-        <input type="text" class="search-box" id="searchInp" oninput="runSearch()" placeholder="Search s22-s89A or Crimes Act...">
-        <div id="searchRes"></div>
+    <div id="v-map" class="hidden">
+        <div class="card"><div class="card-b">
+            <h3>NT → ADF Equivalent</h3>
+            <div id="map-out"></div>
+        </div></div>
     </div>
 
-    <div id="v-samdf" class="hidden">
-        <div class="card">
-            <div class="card-header">SAMDF / DPA Powers</div>
-            <div class="card-body">
-                <strong>s72P: Demand for Identification</strong><br>
-                Authority to demand Name, Address, and Business in the DPA. 
-                <br><br><strong>s72R: Search of Person/Vehicle</strong><br>
-                Power to search clothing and vehicles entering/exiting.
-                <div class="nt-box"><b>Arrest of Trespassers:</b> Refer to <b>Crimes Act s89A</b> for authority to detain civilians on Cth land until NT Police arrival.</div>
+    <div id="v-sam" class="hidden">
+        <div class="card" style="border-left-color: var(--navy);">
+            <div class="card-h">DPA Powers (Part VIA)</div>
+            <div class="card-b">
+                <strong>s72P Identity Demand:</strong> Must state "I am a defense member..." and request Name, Address, and Reason for presence.<br><hr>
+                <strong>s72R Search:</strong> Authorized for security of DPA. Includes vehicles and outer clothing.<br><hr>
+                <strong>s89A Crimes Act:</strong> Summary arrest power for trespassers. Must handover to NT Police ASAP.
             </div>
         </div>
     </div>
 </div>
 
 <script>
-const data = [
-    {s:"s24", t:"AWOL", c:"offence", d:"Absence from duty.", l:"<b>Proof:</b> (1) Member absent; (2) Unauthorized. <b>Threshold:</b> Strict Liability. Only defense is Honest/Reasonable mistake."},
-    {s:"s26", t:"Assaulting Superior", c:"offence", d:"Violence against superior.", l:"<b>Proof:</b> (1) Assault; (2) Victim is superior; (3) Status known. <b>Threshold:</b> Higher penalty if superior is on duty."},
-    {s:"s31", t:"Obstructing SP", c:"offence", d:"Resisting Service Police.", l:"<b>Proof:</b> (1) Hindrance; (2) SP in execution of duty. <b>Threshold:</b> Action must be 'intra vires'."},
-    {s:"s37", t:"Stealing", c:"offence", d:"Theft of service property.", l:"<b>Proof:</b> (1) Appropriation; (2) Intent to deprive. <b>Threshold:</b> Property must be Cth/Defence owned."},
-    {s:"s40", t:"DUI", c:"offence", d:"Impaired driving.", l:"<b>Proof:</b> (1) Operation of vehicle; (2) Alcohol/Drug impairment. <b>Threshold:</b> Incapable of proper control."},
-    {s:"s60", t:"Prejudicial Conduct", c:"offence", d:"Prejudice to good order.", l:"<b>Proof:</b> (1) Act/Omission; (2) Prejudices discipline. <b>Threshold:</b> Must prove 'Service Connection'."},
-    {s:"s89", t:"Arrest Power (SP)", c:"power", d:"Arrest without warrant.", l:"<b>Threshold:</b> Reasonable belief. Requires immediate caution and grounds explanation."},
-    {s:"Crimes s89", t:"Trespass (Cth)", c:"cth", d:"Entry to Cth land.", l:"<b>Proof:</b> (1) Cth Land; (2) Entry/Remain. <b>Threshold:</b> Onus on defendant to prove 'Lawful Excuse'."},
-    {s:"Crimes s89A", t:"Weapons (Cth)", c:"cth", d:"Weapons on Cth land.", l:"<b>Proof:</b> (1) Cth Land; (2) Weapon/Explosive. <b>Threshold:</b> High-risk offence for civilians on base."}
+// JSON DATABASE - Optimized for Space
+const db = [
+    {s:"s22", t:"Abandoning Post", c:"offence", d:"Leaving post/guard w/o relief.", p:"Prove: (1) Assigned duty; (2) Left post; (3) No auth. Threshold: Specific Post Orders are primary evidence."},
+    {s:"s23", t:"Desertion", c:"offence", d:"Absence with intent to stay away.", p:"Prove: (1) Absence; (2) Intent to desert (via kit disposal/statements). Threshold: Permanent intent required."},
+    {s:"s24", t:"AWOL", c:"offence", d:"Unauthorized absence.", p:"Prove: (1) Absent; (2) No leave pass. Threshold: STRICT LIABILITY. No intent needed."},
+    {s:"s26", t:"Assaulting Superior", c:"offence", d:"Violence to superior rank.", p:"Prove: (1) Force/Threat; (2) Superior rank; (3) Knowledge of status. Threshold: Rank disparity must be known."},
+    {s:"s28", t:"Disobeying Command", c:"offence", d:"Intentional failure to obey.", p:"Prove: (1) Lawful command; (2) Specific/Clear; (3) Disobedience. Threshold: Must relate to military duty."},
+    {s:"s31", t:"Obstructing SP", c:"offence", d:"Resisting Service Police.", p:"Prove: (1) Hindrance; (2) SP in execution of duty. Threshold: SP must be acting within legal powers (Intra Vires)."},
+    {s:"s32", t:"Disorderly Conduct", c:"offence", d:"Fighting/Threats on base.", p:"Prove: Conduct likely to prejudice discipline. Threshold: Lower bar than civilian breach of peace."},
+    {s:"s37", t:"Stealing", c:"offence", d:"Theft of Service property.", p:"Prove: (1) Appropriation; (2) Intent to permanently deprive. Threshold: Property must belong to Cth/ADF."},
+    {s:"s40", t:"DUI", c:"offence", d:"Impaired driving (Service Veh).", p:"Prove: (1) Operating veh; (2) Impairment. Threshold: 'Incapable of proper control.'"},
+    {s:"s40C", t:"Drug Presence", c:"offence", d:"Driving with drug in system.", p:"Prove: Positive result (Oral/Blood). Threshold: STRICT LIABILITY. No impairment proof required."},
+    {s:"s60", t:"Prejudicial Conduct", c:"offence", d:"Conduct harming good order.", p:"Threshold: SERVICE CONNECTION must be articulated. How does this hurt ADF discipline or reputation?"},
+    {s:"s89", t:"Arrest Power (DFDA)", c:"power", d:"SP Arrest w/o warrant.", p:"Threshold: REASONABLE BELIEF. Must caution and state grounds immediately."},
+    {s:"Crimes s89", t:"Trespass (Cth)", c:"cth", d:"Unlawful entry to Cth land.", p:"Prove: (1) Cth Land; (2) Entry. Threshold: Onus shifts to defendant to prove Lawful Excuse."},
+    {s:"Crimes s89A", t:"Weapons (Cth)", c:"cth", d:"Weapons on Cth land.", p:"Prove: (1) Cth Land; (2) Weapon/Explosive. Threshold: Federal offence for any unauthorized weapon on base."}
+];
+
+const ntMap = [
+    {n:"Common Assault (s188 CC)", a:"DFDA s26 (if Superior) or s30/33", d:"NT law is broader; DFDA requires specific rank relationship."},
+    {n:"Disorderly (s47 SOA)", a:"DFDA s32", d:"Used for fights/swearing in public or on base."},
+    {n:"Stealing (s210 CC)", a:"DFDA s37", d:"ADF s37 only for Service Property; use NT law for civilian property."},
+    {n:"DUI (s29 Traffic Act)", a:"DFDA s40", d:"SP has jurisdiction over Service Vehicles; NT Police for civilian vehicles."},
+    {n:"Trespass (s5 Trespass Act)", a:"Crimes Act s89", d:"Crimes Act s89 is more powerful on federal land than NT Trespass Act."}
 ];
 
 function nav(id) {
-    ['v-ref', 'v-nt', 'v-samdf'].forEach(v => document.getElementById(v).classList.add('hidden'));
-    document.getElementById('v-' + id).classList.remove('hidden');
-    ['t-ref', 't-nt', 't-samdf'].forEach(t => document.getElementById(t).classList.remove('active'));
-    document.getElementById('t-' + id).classList.add('active');
+    ['v-leg', 'v-map', 'v-sam'].forEach(v => document.getElementById(v).classList.add('hidden'));
+    ['t-leg', 't-map', 't-sam'].forEach(t => document.getElementById(t).classList.remove('active'));
+    document.getElementById('v-'+id).classList.remove('hidden');
+    document.getElementById('t-'+id).classList.add('active');
+    if(id==='map') renderMap();
 }
 
-function runSearch() {
-    const q = document.getElementById('searchInp').value.toLowerCase().trim();
-    const out = document.getElementById('searchRes');
+function render() {
+    const q = document.getElementById('si').value.toLowerCase();
+    const out = document.getElementById('out');
     out.innerHTML = '';
-    data.filter(i => i.s.toLowerCase().includes(q) || i.t.toLowerCase().includes(q)).forEach(i => {
-        out.innerHTML += `<div class="card ${i.c}"><div class="card-header"><span>${i.s}</span><span class="badge bg-${i.c}">${i.c}</span></div><div class="card-body"><strong>${i.t}</strong><br>${i.d}<span class="legal-detail">${i.l}</span><textarea placeholder="Field notes..."></textarea></div></div>`;
+    db.filter(x => x.s.toLowerCase().includes(q) || x.t.toLowerCase().includes(q)).forEach(x => {
+        out.innerHTML += `<div class="card ${x.c}"><div class="card-h"><span>${x.s}</span><span class="badge" style="background:var(--${x.c==='offence'?'law':(x.c==='cth'?'cth':'navy')})">${x.c}</span></div><div class="card-b"><b>${x.t}</b><br>${x.d}<div class="proof"><b>Elements & Thresholds:</b><br>${x.p}</div></div></div>`;
     });
 }
 
-function updateNT() {
-    const v = document.getElementById('ntSel').value;
-    const res = document.getElementById('ntRes');
-    const mapping = {
-        'assault': {adf: 'DFDA s26 or s33', detail: 'If victim is a superior, use s26. If victim is a sentry/duty person, use s33.'},
-        'disorderly': {adf: 'DFDA s32', detail: 'Likely to cause breach of discipline. Use for fights or offensive conduct on base.'},
-        'stealing': {adf: 'DFDA s37', detail: 'Applies to Service Property. If civilian property, refer to Crimes Act/NT Law.'},
-        'dui': {adf: 'DFDA s40', detail: 'Applies to Service Vehicles. For civilian vehicles on public roads, refer to NT Traffic Act.'},
-        'drugs': {adf: 'DFDA s47P / s48', detail: 'Strict liability for possession on service premises.'},
-        'trespass': {adf: 'Crimes Act 1914 s89', detail: 'Use Crimes Act for civilians. Use DFDA s89A for arrest authority.'}
-    };
-    const selection = mapping[v];
-    res.innerHTML = selection ? `<div class="nt-box"><h4>ADF EQUIVALENT: ${selection.adf}</h4>${selection.detail}</div>` : '';
+function renderMap() {
+    const out = document.getElementById('map-out');
+    out.innerHTML = '';
+    ntMap.forEach(m => {
+        out.innerHTML += `<div class="nt-map"><strong>NT: ${m.n}</strong><br><b>ADF:</b> ${m.a}<br><small>${m.d}</small></div><hr>`;
+    });
 }
 
-window.onload = runSearch;
+window.onload = render;
 </script>
 </body>
 </html>
