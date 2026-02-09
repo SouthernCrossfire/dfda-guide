@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DFDA/SAMDF Master Ref</title>
+    <title>ADF Legal Suite 2026</title>
     <style>
         :root { --navy: #1a3a5f; --law: #b22222; --samdf: #2d5a27; --gold: #d5763e; }
         body { font-family: -apple-system, sans-serif; background: #f0f2f5; margin: 0; }
@@ -17,21 +17,22 @@
         .sam-card { border-left-color: var(--samdf); }
         .card-h { padding: 10px 15px; background: #f8f9fa; font-weight: bold; display: flex; justify-content: space-between; font-size: 13px; }
         .card-b { padding: 15px; font-size: 14px; line-height: 1.5; color: #222; }
-        .proof { margin-top: 10px; padding: 10px; background: #f9f9fb; border-radius: 4px; border: 1px solid #eee; font-size: 13px; border-left: 3px solid #ccc; }
+        .proof { margin-top: 10px; padding: 10px; background: #f9f9fb; border-radius: 4px; border: 1px solid #eee; font-size: 12px; border-left: 3px solid #ccc; }
         .badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; color: #fff; text-transform: uppercase; }
         .hidden { display: none !important; }
+        small { color: #666; font-size: 11px; display: block; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <div class="h-nav">
-    <div id="t-off" class="tab active" onclick="nav('off')">Offences</div>
-    <div id="t-pwr" class="tab" onclick="nav('pwr')">MP Powers</div>
-    <div id="t-sam" class="tab" onclick="nav('sam')">SAMDF/DPA</div>
+    <div id="t-off" class="tab active" onclick="nav('off')">Offences (DFDA)</div>
+    <div id="t-pwr" class="tab" onclick="nav('pwr')">MP Powers (DFDA)</div>
+    <div id="t-sam" class="tab" onclick="nav('sam')">SAMDF (Def Act)</div>
 </div>
 
 <div class="cnt">
-    <input type="text" class="sb" id="si" oninput="render()" placeholder="Search Section or Keyword...">
+    <input type="text" class="sb" id="si" oninput="render()" placeholder="Search Section # or Name...">
     <div id="v-off"></div>
     <div id="v-pwr" class="hidden"></div>
     <div id="v-sam" class="hidden"></div>
@@ -39,25 +40,24 @@
 
 <script>
 const db = [
-    /* OFFENCES (DFDA 1982) */
-    {s:"22", t:"Desertion", c:"off", d:"Absence with intent to stay away permanently.", p:"Check for disposal of kit or long-term concealment."},
-    {s:"24", t:"AWOL", c:"off", d:"Unauthorized absence from duty/place of duty.", p:"Strict Liability. Absence + lack of leave = offence."},
-    {s:"25", t:"Assaulting a superior officer", c:"off", d:"Force/threats to a superior officer.", p:"Accused must know victim is superior. s25(2) defense applies."},
-    {s:"26", t:"Insubordinate conduct", c:"off", d:"Insulting language or behavior to a superior.", p:"Must be defiant; heard by or intended for superior."},
-    {s:"31", t:"Obstruction of service police", c:"off", d:"Hindering SP in execution of duty.", p:"SP must be acting intra vires (within legal power)."},
-    {s:"60", t:"Prejudicial conduct", c:"off", d:"Act/Omission likely to prejudice good order.", p:"Must articulate 'Service Connection' and impact."},
+    /* OFFENCES - DFDA 1982 (C2024C00861) */
+    {s:"22", t:"Desertion", c:"off", d:"Absence with intent to stay away permanently.", p:"Intent is critical. Look for statements or disposal of uniform/kit."},
+    {s:"24", t:"AWOL", c:"off", d:"Absence from duty/place of duty without authority.", p:"Strict Liability. Prove absence and lack of valid leave pass/authority."},
+    {s:"25", t:"Assaulting a superior officer", c:"off", d:"Violence or threats to a superior officer.", p:"Elements: (1) Assault; (2) Victim is superior; (3) Knowledge of status."},
+    {s:"26", t:"Insubordinate conduct", c:"off", d:"Insulting language or behavior to a superior.", p:"Must be heard by superior or intended for them; affects discipline."},
+    {s:"60", t:"Prejudicial conduct", c:"off", d:"Act/Omission likely to prejudice good order.", p:"Articulate the 'Service Connection'. How did this harm the ADF's reputation or order?"},
 
-    /* MP POWERS (DFDA 1982) */
-    {s:"89", t:"Arrest without warrant", c:"pwr", d:"SP power to arrest on reasonable suspicion.", p:"Duty: Caution immediately and provide grounds."},
-    {s:"90", t:"Search of arrested person", c:"pwr", d:"Search following an s89 arrest.", p:"Search for weapons or concealed evidence."},
-    {s:"101W", t:"General Search/Seizure", c:"pwr", d:"Search premises/seize evidence.", p:"Requires warrant (s101X) or emergency (s101Z)."},
+    /* MP POWERS - DFDA 1982 (C2024C00861) */
+    {s:"89", t:"Arrest without warrant", c:"pwr", d:"Arrest on reasonable suspicion of service offence.", p:"Must caution immediately and state grounds (s89(4))."},
+    {s:"101", t:"Search of arrested person", c:"pwr", d:"Search for weapons or evidence concealed on person.", p:"Conducted immediately following an s89 arrest."},
 
-    /* SAMDF / DPA POWERS (Defence Act 1903) */
-    {s:"71Q", t:"Search Authority", c:"sam", d:"Search of persons/vehicles entering/leaving DPA.", p:"Authority to prevent prohibited items entering a secure area."},
-    {s:"71V", t:"Seizure of Prohibited Items", c:"sam", d:"Seizing items found during a Part VIA search.", p:"Items that may pose a threat to the security of the DPA."},
-    {s:"72P", t:"Identity Demand", c:"sam", d:"Power to request name, address, and reason for presence.", p:"Member must show ID and state reason for demand. Refusal is an offence."},
-    {s:"72R", t:"Stop and Detain", c:"sam", d:"Detaining a person for the purpose of a search.", p:"Limited to the time necessary to conduct the search/verify ID."},
-    {s:"89", t:"Trespass Arrest", c:"sam", d:"Arrest of person found trespassing on Cth land.", p:"Note: This is Defence Act s89, distinct from DFDA s89. Handover to civil police ASAP."}
+    /* SAMDF / DPA POWERS - Defence Act 1903 (C2025C00691) */
+    {s:"71L", t:"Stop and Search (DRA/DPA)", c:"sam", d:"Power to stop and search persons on Defence premises.", p:"Threshold: Must believe it's necessary for the security of the premises."},
+    {s:"71Q", t:"Vehicle Search", c:"sam", d:"Search of vehicles in/entering/leaving Defence premises.", p:"Includes power to search containers and goods within the vehicle."},
+    {s:"71V", t:"Seizure of Prohibited Items", c:"sam", d:"Power to seize items that may threaten security.", p:"Seized items must be handed over to civil police or returned if no longer a threat."},
+    {s:"72P", t:"Identity Demand", c:"sam", d:"Request Name, Address, and Reason for presence.", p:"Member MUST identify themselves as a Defence Security Official first."},
+    {s:"72S", t:"Use of Force (Arrest)", c:"sam", d:"Force used to arrest person on Defence premises.", p:"Threshold: Must be 'Reasonable and Necessary' and 'not intended to cause GBI or Death' unless strictly necessary to protect life."},
+    {s:"72T", t:"Detention Power", c:"sam", d:"Power to detain person for civil police.", p:"Limited to the time reasonably necessary for civil police to arrive."}
 ];
 
 let curTab = 'off';
@@ -76,18 +76,17 @@ function render() {
     const out = document.getElementById('v-' + curTab);
     const filtered = db.filter(x => x.c === curTab && (x.s.includes(q) || x.t.toLowerCase().includes(q)));
     
-    out.innerHTML = '';
+    out.innerHTML = `<small>Source: ${curTab === 'sam' ? 'Defence Act 1903 (C2025C00691)' : 'DFDA 1982 (C2024C00861)'}</small>`;
     filtered.forEach(x => {
-        const typeLabel = x.c === 'off' ? 'Offence' : (x.c === 'pwr' ? 'DFDA Power' : 'SAMDF Power');
         out.innerHTML += `
             <div class="card ${x.c === 'pwr' ? 'pwr-card' : (x.c === 'sam' ? 'sam-card' : '')}">
                 <div class="card-h">
                     <span>Section ${x.s}</span>
-                    <span class="badge" style="background:var(--${x.c === 'off' ? 'law' : (x.c === 'pwr' ? 'navy' : 'samdf')})">${typeLabel}</span>
+                    <span class="badge" style="background:var(--${x.c === 'off' ? 'law' : (x.c === 'pwr' ? 'navy' : 'samdf')})">${x.c.toUpperCase()}</span>
                 </div>
                 <div class="card-b">
                     <strong>${x.t}</strong><br>${x.d}
-                    <div class="proof"><strong>Threshold/Authority:</strong><br>${x.p}</div>
+                    <div class="proof"><strong>Threshold / Procedure:</strong><br>${x.p}</div>
                 </div>
             </div>`;
     });
