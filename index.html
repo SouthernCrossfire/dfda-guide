@@ -61,4 +61,11 @@
 // Load saved key
 document.addEventListener("DOMContentLoaded", () => {
     const savedKey = localStorage.getItem("anthropic_api_key");
-    if (savedKey) document.getElementById("apikey
+    if (savedKey) document.getElementById("apikey").value = savedKey;
+});
+
+function saveKey() {
+    const key = document.getElementById("apikey").value;
+    if (!key) return alert("Enter a key first.");
+    localStorage.setItem("anthropic_api_key", key);
+    alert
